@@ -1,0 +1,49 @@
+// Partials in SCSS
+@import 'partials/base.scss';
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 27px;
+    letter-spacing: -1px;
+    padding: 18px;
+
+    .navbar-brand--link {
+      color: black;
+    }
+  }
+
+  .navbar-menu {
+    display: flex;
+    padding: 0 12px;
+
+    .navbar-menu--link {
+      padding: 12px;
+      color: $light-grey;
+      font-family: $lato;
+    }
+
+    .cursor {
+      cursor: pointer;
+    }
+
+    .active {
+      color: $primary;
+    }
+  }
+}
+
+.banner-photo {
+  width: 100%;
+}
+
+.legal-disclaimer {
+  padding: 6px;
+  color: $light-grey;
+  text-align: center;
+  font-size: 0.7em;
+}

@@ -1,0 +1,22 @@
+// Base
+
+@import "variables";
+
+* {
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+body {
+  font-family: $open;
+  color: rgb(5, 5, 5);
+}
+
+a {
+  color: $light-grey;
+  text-decoration: none;
+}
+
+a.active {
+  color: $primary;
+}
