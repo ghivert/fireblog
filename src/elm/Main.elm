@@ -4,11 +4,15 @@ import Navigation exposing (Location)
 import Html exposing (Html)
 import Html.Attributes
 import Update.Extra as Update
+
 import Types exposing (..)
 import Routing
+import View.Home
 import View.Debug
 import View.Static.Header as Header
 import View.Static.Footer as Footer
+
+import Seeds.Articles
 
 main : Program Never Model Msg
 main =
@@ -23,7 +27,8 @@ init : Location -> (Model, Cmd Msg)
 init location =
   { location = location
   , route = Routing.parseLocation location
-  , debugInfos = True
+  , debugInfos = False
+  , articles = Seeds.Articles.samples
   } ! []
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -53,20 +58,33 @@ handleNavigation model navigation =
 
 view : Model -> Html Msg
 view model =
-  case model.route of
-    Home ->
-      Html.div []
-        [ Header.view model
-        , Html.div
-          [ Html.Attributes.class "body" ]
-          [ Html.img
-            [ Html.Attributes.class "banner-photo"
-            , Html.Attributes.src "static/img/banner-photo.jpg"
-            ]
-            []
-          ]
-        , Footer.view
-        , View.Debug.debugInfosPanel model
+  Html.div []
+    [ Header.view model
+    , Html.div
+      [ Html.Attributes.class "body" ]
+      [ Html.img
+        [ Html.Attributes.class "banner-photo"
+        , Html.Attributes.src "static/img/banner-photo.jpg"
         ]
-    _ ->
+        []
+      , Html.div
+        [ Html.Attributes.class "container" ]
+        [ customView model ]
+      ]
+    , Footer.view
+    , View.Debug.debugInfosPanel model
+    ]
+
+customView : Model -> Html Msg
+customView ({ route } as model) =
+  case route of
+    Home ->
+      View.Home.view model
+    About ->
+      Html.text ""
+    Article id ->
+      Html.text ""
+    Contact ->
+      Html.text ""
+    NotFound ->
       Html.text ""

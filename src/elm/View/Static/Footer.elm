@@ -15,17 +15,9 @@ disclaimer =
     [ Html.div
       [ Html.Attributes.class "legal-disclaimer--item" ]
       [ Html.text "Banner photo by "
-      , Html.a
-        [ Html.Attributes.href "https://unsplash.com/photos/5AiWn2U10cw"
-        , Html.Attributes.target "_blank"
-        ]
-        [ Html.text "Aaron Burden" ]
+      , blankLink "https://unsplash.com/photos/5AiWn2U10cw" "Aaron Burden"
       , Html.text " on "
-      , Html.a
-        [ Html.Attributes.href "https://unsplash.com/"
-        , Html.Attributes.target "_blank"
-        ]
-        [ Html.text "Unsplash" ]
+      , blankLink "https://unsplash.com/" "Unsplash"
       ]
     , Html.div
       [ Html.Attributes.class "legal-disclaimer--item" ]
@@ -34,3 +26,11 @@ disclaimer =
         [ Html.text "Design heavily inspired by Saturn from Afnizar Nur Ghifari" ]
       ]
     ]
+
+blankLink : String -> String -> Html msg
+blankLink url content =
+  Html.a
+    [ Html.Attributes.href url
+    , Html.Attributes.target "_blank"
+    ]
+    [ Html.text content ]

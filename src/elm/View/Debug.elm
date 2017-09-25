@@ -1,14 +1,10 @@
-module View.Debug exposing (infoPanel, switch, debugInfosPanel)
-
-import Html exposing (Html)
-import Types exposing (..)
+module View.Debug exposing (infoPanel, debugInfosPanel)
 
 import Html exposing (Html)
 import Html.Attributes
-import Html.Events
-import Types exposing (..)
 import Navigation exposing (Location)
 import Data.Dumper as Dumper
+import Types exposing (..)
 
 (=>) : a -> b -> (a, b)
 (=>) =
@@ -66,42 +62,6 @@ debugSection label content =
       [ Html.text label ]
     , content
     ]
-
-switch : Bool -> Html Msg
-switch debugInfos =
-  Html.div
-    []
-    [ Html.div
-      [ Html.Attributes.style
-        [ "background-color" => if debugInfos then "#0096FB" else "#cccccc"
-        , "width" => "60px"
-        , "height" => "34px"
-        , "border-radius" => "50px"
-        , "position" => "relative"
-        , "cursor" => "pointer"
-        , "flex" => "1"
-        , "top" => "4px"
-        ]
-      , Html.Events.onClick ToggleDebugInfos
-      ]
-      [ Html.div
-        [ Html.Attributes.style
-          [ "box-sizing" => "border-box"
-          , "background-color" => "#ffffff"
-          , "width" => "26px"
-          , "height" => "26px"
-          , "border-radius" => "50px"
-          , "position" => "absolute"
-          , "top" => "4px"
-          , "left" => "4px"
-          , "transition" => ".4s"
-          , "transform" => if debugInfos then "translateX(26px)" else ""
-          ]
-        ]
-        []
-      ]
-    ]
-
 
 -- Dumpers
 dumpLocation : Location -> Html msg

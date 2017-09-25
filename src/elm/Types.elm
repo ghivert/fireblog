@@ -1,6 +1,7 @@
 module Types exposing (..)
 
 import Navigation exposing (Location)
+import Article exposing (Article)
 
 type SpaNavigation
   = NewLocation Location
@@ -24,6 +25,7 @@ type alias Model =
   { location : Location
   , route : Route
   , debugInfos : Bool
+  , articles : List Article
   }
 
 setLocation : Location -> Model -> Model

@@ -1,6 +1,7 @@
 // Partials in SCSS
 @import 'partials/base.scss';
 
+// Navbar
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -8,9 +9,9 @@
 
   .navbar-brand {
     font-weight: 700;
-    font-size: 27px;
+    font-size: 1.8em;
     letter-spacing: -1px;
-    padding: 18px;
+    padding: $large-spacing;
 
     .navbar-brand--link {
       color: black;
@@ -19,10 +20,10 @@
 
   .navbar-menu {
     display: flex;
-    padding: 0 12px;
+    padding: 0 $medium-spacing;
 
     .navbar-menu--link {
-      padding: 12px;
+      padding: $medium-spacing;
       color: $light-grey;
       font-family: $lato;
     }
@@ -37,13 +38,58 @@
   }
 }
 
+// Misc
 .banner-photo {
   width: 100%;
 }
 
 .legal-disclaimer {
-  padding: 6px;
+  padding: $small-spacing;
   color: $light-grey;
   text-align: center;
   font-size: 0.7em;
+}
+
+// Articles
+.articles {
+  padding-top: $xxlarge-spacing;
+
+  .article-preview {
+    padding: $medium-spacing 0;
+
+    div {
+      padding: $small-spacing 0;
+    }
+
+    .article-preview--title {
+      font-family: $lato;
+      font-size: 1.5em;
+    }
+
+    .article-preview--content {
+      color: $dark-grey;
+      font-size: 0.95em;
+      line-height: 1.5em;
+    }
+  }
+}
+
+// Responsive container
+@media (max-width: 720px) {
+  .container {
+    padding-left: $large-spacing;
+    padding-right: $large-spacing;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 720px) {
+  .container {
+    padding-left: $xxlarge-spacing;
+    padding-right: $xxlarge-spacing;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 720px;
+  }
 }
