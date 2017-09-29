@@ -3,10 +3,11 @@ module View.Static.Header exposing (..)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Style.Extra as Style
 import Types exposing (..)
 
 view : Model -> Html Msg
-view model =
+view ({ menuOpen } as model) =
   Html.div
     [ Html.Attributes.class "navbar" ]
     [ Html.div
@@ -16,12 +17,18 @@ view model =
         [ Html.text "Neptune" ]
       ]
     , navbarMenu model
+    , Html.div
+      [ Html.Attributes.class "navbar-menu-button" ]
+      [ hamburgerButton model ]
     ]
 
 navbarMenu : Model -> Html Msg
-navbarMenu { debugInfos, route } =
+navbarMenu { menuOpen, route } =
   Html.div
-    [ Html.Attributes.class "navbar-menu" ]
+    [ Html.Attributes.class "navbar-menu"
+    , Html.Attributes.style
+      [ if menuOpen then ("left", "0") else Style.none ]
+    ]
     [ link (route == Home) "Home"
     , link (route == About) "About"
     , link (case route of
@@ -30,15 +37,9 @@ navbarMenu { debugInfos, route } =
         _ ->
           False) "Archive"
     , link (route == Contact) "Contact"
-    , Html.a
-      [ Html.Attributes.class <|
-        addActive debugInfos "navbar-menu--link cursor"
-      , Html.Events.onClick ToggleDebugInfos
-      ]
-      [ Html.text "Debug" ]
     ]
 
-link : Bool -> String -> Html msg
+link : Bool -> String -> Html Msg
 link active label =
   Html.a
     [ Html.Attributes.class <| addActive active "navbar-menu--link" ]
@@ -46,4 +47,20 @@ link active label =
 
 addActive : Bool -> String -> String
 addActive active classes =
-  classes ++ if active then " active" else ""
+  classes ++ if active then " is-active" else ""
+
+hamburgerButton : Model -> Html Msg
+hamburgerButton { menuOpen } =
+  Html.button
+    [ Html.Attributes.class <|
+      addActive menuOpen "hamburger hamburger--vortex"
+    , Html.Attributes.type_ "button"
+    , Html.Events.onClick ToggleMenu
+    ]
+    [ Html.span
+      [ Html.Attributes.class "hamburger-box" ]
+      [ Html.span
+        [ Html.Attributes.class "hamburger-inner" ]
+        []
+      ]
+    ]

@@ -3,12 +3,13 @@ module Main exposing (..)
 import Navigation exposing (Location)
 import Html exposing (Html)
 import Html.Attributes
+import Html.Extra as Html
 import Update.Extra as Update
+import Window
 
 import Types exposing (..)
 import Routing
 import View.Home
-import View.Debug
 import View.Static.Header as Header
 import View.Static.Footer as Footer
 
@@ -20,25 +21,36 @@ main =
     { init = init
     , view = view
     , update = update
-    , subscriptions = always Sub.none
+    , subscriptions = subscriptions
     }
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Window.resizes Resizes
 
 init : Location -> (Model, Cmd Msg)
 init location =
   { location = location
   , route = Routing.parseLocation location
-  , debugInfos = False
   , articles = Seeds.Articles.samples
+  , menuOpen = False
   } ! []
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({ debugInfos } as model) =
+update msg ({ menuOpen } as model) =
   case msg of
     Navigation navigation ->
       handleNavigation model navigation
-    ToggleDebugInfos ->
-      { model | debugInfos = not debugInfos } ! []
-
+    ToggleMenu ->
+      toggleMenu model ! []
+    Resizes { width, height } ->
+      if width >= 736 then
+        model
+          |> closeMenu
+          |> Update.identity
+      else
+        model ! []
+        
 handleNavigation : Model -> SpaNavigation -> (Model, Cmd Msg)
 handleNavigation model navigation =
   case navigation of
@@ -72,7 +84,6 @@ view model =
         [ customView model ]
       ]
     , Footer.view
-    , View.Debug.debugInfosPanel model
     ]
 
 customView : Model -> Html Msg
@@ -81,10 +92,10 @@ customView ({ route } as model) =
     Home ->
       View.Home.view model
     About ->
-      Html.text ""
+      Html.none
     Article id ->
-      Html.text ""
+      Html.none
     Contact ->
-      Html.text ""
+      Html.none
     NotFound ->
-      Html.text ""
+      Html.none

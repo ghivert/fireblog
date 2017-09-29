@@ -3,6 +3,7 @@ module View.Article exposing (..)
 import Html exposing (Html)
 import Html.Attributes
 -- import Html.Events
+import Html.Extra as Html
 
 import Article exposing (Article)
 import Types exposing (..)
@@ -28,7 +29,7 @@ shorten string =
   if String.length string > 500 then
     string
       |> String.left 500
-      |> flip String.append "..."
+      |> flip String.append "…"
   else
     string
 
@@ -60,4 +61,4 @@ readMoreLink { content, uuid } =
         [ Html.text "Read More"]
       ]
   else
-    Html.text ""
+    Html.none
