@@ -10,10 +10,6 @@ type alias Article =
   , date : Date
   }
 
--- empty : Article
--- empty =
---   Article "" "" "" []
-
 isId : String -> Article -> Bool
 isId id { uuid } =
   uuid == id

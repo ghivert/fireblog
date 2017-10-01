@@ -3,7 +3,6 @@ module View.Home exposing (..)
 import Html exposing (Html)
 import Html.Attributes
 
--- import Article exposing (Article)
 import View.Article
 import Types exposing (..)
 

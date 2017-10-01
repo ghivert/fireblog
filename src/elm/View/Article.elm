@@ -2,11 +2,9 @@ module View.Article exposing (view, preview)
 
 import Html exposing (Html)
 import Html.Attributes
--- import Html.Events
 import Html.Extra
 import Date exposing (Date)
 import Date.Extra.Format
--- import Date.Extra.Config.Config_fr_fr
 import Date.Extra.Config.Config_en_us
 
 import Article exposing (Article)
