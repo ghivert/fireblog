@@ -10,23 +10,23 @@
   justify-content: space-between;
   align-items: center;
 
-  .navbar-brand {
+  &-brand {
     font-weight: 700;
     font-size: 1.8em;
     letter-spacing: -1px;
     padding: $large-spacing;
 
-    .navbar-brand--link {
+    &--link {
       color: black;
     }
   }
 
-  .navbar-menu {
+  &-menu {
     display: flex;
     padding: 0 $medium-spacing;
     transition: left 0.5s ease-in-out;
 
-    .navbar-menu--link {
+    &--link {
       padding: $medium-spacing;
       color: $light-grey;
       font-family: $lato;
@@ -68,12 +68,12 @@
       padding: $small-spacing 0;
     }
 
-    .article--title {
+    &--title {
       font-family: $lato;
       font-size: 1.5em;
     }
 
-    .article--content {
+    &--content {
       color: $dark-grey;
       font-size: 0.95em;
       line-height: 1.5em;
@@ -81,18 +81,18 @@
       margin-top: 0.5em;
     }
 
-    .article--date {
+    &--date {
       text-align: right;
       color: $dark-grey;
       font-size: 0.8em;
     }
 
-    .article--read-more {
+    &--read-more {
       text-align: right;
       font-family: $lato;
     }
 
-    .article--tags {
+    &--tags {
       font-family: $lato;
     }
   }
@@ -103,11 +103,11 @@
   max-width: 400px;
   margin: auto;
 
-  .contact--introduction {
+  &--introduction {
     padding: $medium-spacing 0;
   }
 
-  .contact--form {
+  &--form {
     label {
       padding: $small-spacing 0;
       font-family: $lato;
@@ -131,7 +131,7 @@
       }
     }
 
-    .contact--form-submit {
+    &-submit {
       padding: $small-spacing 0;
       font-family: $lato;
       background-color: $light-blue;
@@ -146,17 +146,17 @@
   text-align: center;
   padding: $xxlarge-spacing 0;
 
-  .not-found--404 {
+  &--404 {
     font-size: 3em;
     font-weight: 900;
   }
 
-  .not-found--text {
+  &--text {
     font-size: 3em;
     padding-bottom: $xxlarge-spacing;
   }
 
-  .not-found--proposition {
+  &--proposition {
   }
 }
 
@@ -205,11 +205,11 @@
     min-width: 200px;
     padding: 0 $xlarge-spacing !important;
 
-    .navbar-menu--link:first-child {
+    &--link:first-child {
       padding-top: $xxlarge-spacing !important;
     }
 
-    .navbar-menu--link {
+    &--link {
       font-size: 1.3em;
     }
   }
@@ -220,10 +220,6 @@
     padding-left: $xxlarge-spacing;
     padding-right: $xxlarge-spacing;
     max-width: 720px;
-  }
-
-  .navbar-menu {
-    // display: flex !important;
   }
 
   .navbar-menu-button {

@@ -13,10 +13,10 @@ body {
 a {
   color: $light-grey;
   text-decoration: none;
-}
 
-a.is-active {
-  color: $primary;
+  &.is-active {
+    color: $primary;
+  }
 }
 
 input, textarea {
