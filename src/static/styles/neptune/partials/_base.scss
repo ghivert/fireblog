@@ -18,3 +18,9 @@ a {
 a.is-active {
   color: $primary;
 }
+
+input, textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid $xlight-grey;
+}

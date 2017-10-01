@@ -24,17 +24,37 @@ type Route
 type MenuAction
   = ToggleMenu
 
+type ContactAction
+  = SendContactMail
+  | EmailInput String
+  | MessageInput String
+
 type Msg
   = Navigation SpaNavigation
   | HamburgerMenu MenuAction
   | Resizes Size
   | DateNow Date
+  | ContactForm ContactAction
+
+type alias ContactFields =
+  { email : String
+  , message : String
+  }
+
+setEmailField : String -> ContactFields -> ContactFields
+setEmailField email fields =
+  { fields | email = email }
+
+setMessageField : String -> ContactFields -> ContactFields
+setMessageField message fields =
+  { fields | message = message }
 
 type alias Model =
   { location : Location
   , route : Route
   , articles : List Article
   , menuOpen : Bool
+  , contactFields : ContactFields
   }
 
 setLocation : Location -> Model -> Model
@@ -52,6 +72,22 @@ toggleMenu ({ menuOpen } as model) =
 closeMenu : Model -> Model
 closeMenu model =
   { model | menuOpen = False }
+
+asContactFieldsIn : Model -> ContactFields -> Model
+asContactFieldsIn model contactFields =
+  { model | contactFields = contactFields }
+
+setEmailContact : String -> Model -> Model
+setEmailContact email ({ contactFields } as model) =
+  contactFields
+    |> setEmailField email
+    |> asContactFieldsIn model
+
+setMessageContact : String -> Model -> Model
+setMessageContact message ({ contactFields } as model) =
+  contactFields
+    |> setMessageField message
+    |> asContactFieldsIn model
 
 getArticleById : String -> Model -> Maybe Article
 getArticleById id { articles } =

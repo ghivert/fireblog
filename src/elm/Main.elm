@@ -13,6 +13,7 @@ import Types exposing (..)
 import Routing
 import View.Home
 import View.Article
+import View.Contact
 import View.Static.Header as Header
 import View.Static.Footer as Footer
 import View.Static.NotFound
@@ -37,6 +38,10 @@ init location =
   , route = Routing.parseLocation location
   , articles = []
   , menuOpen = False
+  , contactFields =
+    { email = ""
+    , message = ""
+    }
   } ! [ Task.perform DateNow Date.now ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -55,6 +60,8 @@ update msg ({ menuOpen } as model) =
         model ! []
     DateNow date ->
       { model | articles = Seeds.Articles.samples date } ! []
+    ContactForm action ->
+      handleContactForm model action
 
 handleNavigation : Model -> SpaNavigation -> (Model, Cmd Msg)
 handleNavigation model navigation =
@@ -78,6 +85,20 @@ handleHamburgerMenu model action =
   case action of
     ToggleMenu ->
       toggleMenu model ! []
+
+handleContactForm : Model -> ContactAction -> (Model, Cmd Msg)
+handleContactForm model contactAction =
+  case contactAction of
+    SendContactMail ->
+      model ! []
+    EmailInput email ->
+      model
+        |> setEmailContact email
+        |> Update.identity
+    MessageInput message ->
+      model
+        |> setMessageContact message
+        |> Update.identity
 
 view : Model -> Html Msg
 view model =
@@ -112,6 +133,6 @@ customView ({ route } as model) =
     Archives ->
       Html.none
     Contact ->
-      Html.none
+      View.Contact.view model
     NotFound ->
       View.Static.NotFound.view model

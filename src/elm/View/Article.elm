@@ -4,12 +4,16 @@ import Html exposing (Html)
 import Html.Attributes
 -- import Html.Events
 import Html.Extra
+import Date exposing (Date)
+import Date.Extra.Format
+-- import Date.Extra.Config.Config_fr_fr
+import Date.Extra.Config.Config_en_us
 
 import Article exposing (Article)
 import Types exposing (..)
 
 view : Article -> Html Msg
-view { title, content, tags } =
+view { title, content, tags, date } =
   Html.div
     [ Html.Attributes.class "articles" ]
     [ Html.div
@@ -17,6 +21,7 @@ view { title, content, tags } =
       [ Html.h1
         [ Html.Attributes.class "article--title" ]
         [ Html.text title ]
+      , dateView date
       , Html.p
         [ Html.Attributes.class "article--content" ]
         [ Html.text content ]
@@ -27,7 +32,7 @@ view { title, content, tags } =
     ]
 
 preview : Article -> Html Msg
-preview ({ title, content, uuid, tags } as article) =
+preview ({ title, content, uuid, tags, date } as article) =
   Html.div
     [ Html.Attributes.class "article" ]
     [ Html.h1
@@ -36,6 +41,7 @@ preview ({ title, content, uuid, tags } as article) =
     , Html.p
       [ Html.Attributes.class "article--content" ]
       [ Html.text <| shorten content ]
+    , dateView date
     , Html.div
       [ Html.Attributes.class "article--tags" ]
       [ tagsLink tags ]
@@ -50,6 +56,21 @@ shorten string =
       |> flip String.append "…"
   else
     string
+
+dateView : Date -> Html Msg
+dateView date =
+  Html.div
+    [ Html.Attributes.class "article--date" ]
+    [ Html.text <|
+      Date.Extra.Format.format
+        Date.Extra.Config.Config_en_us.config
+        englishDateFormat
+        date
+    ]
+
+englishDateFormat : String
+englishDateFormat =
+  "Posted on %d %B %Y."
 
 tagsLink : List String -> Html Msg
 tagsLink tags =

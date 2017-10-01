@@ -39,7 +39,7 @@
     }
 
     .is-active {
-      color: $primary;
+      color: $light-blue;
     }
   }
 }
@@ -50,6 +50,7 @@
 }
 
 .legal-disclaimer {
+  margin-bottom: $medium-spacing;
   padding: $small-spacing;
   color: $light-grey;
   text-align: center;
@@ -76,6 +77,14 @@
       color: $dark-grey;
       font-size: 0.95em;
       line-height: 1.5em;
+      margin-bottom: 0.5em;
+      margin-top: 0.5em;
+    }
+
+    .article--date {
+      text-align: right;
+      color: $dark-grey;
+      font-size: 0.8em;
     }
 
     .article--read-more {
@@ -85,6 +94,50 @@
 
     .article--tags {
       font-family: $lato;
+    }
+  }
+}
+
+.contact {
+  padding: $xxlarge-spacing 0;
+  max-width: 400px;
+  margin: auto;
+
+  .contact--introduction {
+    padding: $medium-spacing 0;
+  }
+
+  .contact--form {
+    label {
+      padding: $small-spacing 0;
+      font-family: $lato;
+      font-weight: 400;
+      display: block;
+
+      span {
+        padding: 0 $small-spacing;
+      }
+
+      input, textarea {
+        margin-top: $medium-spacing;
+        margin-bottom: $large-spacing;
+        padding: $small-spacing;
+        color: $dark-grey;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+    }
+
+    .contact--form-submit {
+      padding: $small-spacing 0;
+      font-family: $lato;
+      background-color: $light-blue;
+      color: white;
+      border: none;
+      font-weight: 700;
     }
   }
 }
