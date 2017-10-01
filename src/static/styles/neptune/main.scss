@@ -24,11 +24,14 @@
   .navbar-menu {
     display: flex;
     padding: 0 $medium-spacing;
+    transition: left 0.5s ease-in-out;
 
     .navbar-menu--link {
       padding: $medium-spacing;
       color: $light-grey;
       font-family: $lato;
+      cursor: pointer;
+      outline: none;
     }
 
     .cursor {
@@ -57,32 +60,50 @@
 .articles {
   padding-top: $xxlarge-spacing;
 
-  .article-preview {
+  .article {
     padding: $medium-spacing 0;
 
     div {
       padding: $small-spacing 0;
     }
 
-    .article-preview--title {
+    .article--title {
       font-family: $lato;
       font-size: 1.5em;
     }
 
-    .article-preview--content {
+    .article--content {
       color: $dark-grey;
       font-size: 0.95em;
       line-height: 1.5em;
     }
 
-    .article-preview--read-more {
+    .article--read-more {
       text-align: right;
       font-family: $lato;
     }
 
-    .article-preview--tags {
+    .article--tags {
       font-family: $lato;
     }
+  }
+}
+
+.not-found {
+  text-align: center;
+  padding: $xxlarge-spacing 0;
+
+  .not-found--404 {
+    font-size: 3em;
+    font-weight: 900;
+  }
+
+  .not-found--text {
+    font-size: 3em;
+    padding-bottom: $xxlarge-spacing;
+  }
+
+  .not-found--proposition {
   }
 }
 
@@ -120,13 +141,12 @@
   }
 
   .navbar-menu {
-    flex-direction: column;
     position: fixed;
     top: 0;
     left: -100%;
+    flex-direction: column;
     background-color: white;
     z-index: 1000;
-    // border-right: 1px solid rgba(215, 215, 215, 0.5);
     box-shadow: 2px 0px 6px -1px #939393;
     height: 100%;
     min-width: 200px;
@@ -134,6 +154,10 @@
 
     .navbar-menu--link:first-child {
       padding-top: $xxlarge-spacing !important;
+    }
+
+    .navbar-menu--link {
+      font-size: 1.3em;
     }
   }
 }

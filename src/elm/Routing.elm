@@ -8,9 +8,10 @@ parseRoute : Parser (Route -> a) a
 parseRoute =
   UrlParser.oneOf
     [ map Home top
-    , map About (s "about")
-    , map Contact (s "contact")
-    , map Article (string)
+    , map About <| s "about"
+    , map Contact <| s "contact"
+    , map Archives <| s "archives"
+    , map Article <| s "article" </> string
     ]
 
 parseLocation : Location -> Route

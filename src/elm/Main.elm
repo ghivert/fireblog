@@ -6,13 +6,16 @@ import Html.Attributes
 import Html.Extra as Html
 import Update.Extra as Update
 import Window
+import Date exposing (Date)
+import Task
 
 import Types exposing (..)
 import Routing
 import View.Home
+import View.Article
 import View.Static.Header as Header
 import View.Static.Footer as Footer
-
+import View.Static.NotFound
 import Seeds.Articles
 
 main : Program Never Model Msg
@@ -32,25 +35,27 @@ init : Location -> (Model, Cmd Msg)
 init location =
   { location = location
   , route = Routing.parseLocation location
-  , articles = Seeds.Articles.samples
+  , articles = []
   , menuOpen = False
-  } ! []
+  } ! [ Task.perform DateNow Date.now ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({ menuOpen } as model) =
   case msg of
     Navigation navigation ->
       handleNavigation model navigation
-    ToggleMenu ->
-      toggleMenu model ! []
-    Resizes { width, height } ->
+    HamburgerMenu action ->
+      handleHamburgerMenu model action
+    Resizes { width } ->
       if width >= 736 then
         model
           |> closeMenu
           |> Update.identity
       else
         model ! []
-        
+    DateNow date ->
+      { model | articles = Seeds.Articles.samples date } ! []
+
 handleNavigation : Model -> SpaNavigation -> (Model, Cmd Msg)
 handleNavigation model navigation =
   case navigation of
@@ -62,11 +67,17 @@ handleNavigation model navigation =
     ReloadHomePage ->
       model ! [ Navigation.newUrl "/" ]
     ChangePage url ->
-      model ! [ Navigation.newUrl url ]
+      (closeMenu model) ! [ Navigation.newUrl url ]
     BackPage ->
       model ! [ Navigation.back 1 ]
     ForwardPage ->
       model ! [ Navigation.forward 1 ]
+
+handleHamburgerMenu : Model -> MenuAction -> (Model, Cmd Msg)
+handleHamburgerMenu model action =
+  case action of
+    ToggleMenu ->
+      toggleMenu model ! []
 
 view : Model -> Html Msg
 view model =
@@ -76,7 +87,7 @@ view model =
       [ Html.Attributes.class "body" ]
       [ Html.img
         [ Html.Attributes.class "banner-photo"
-        , Html.Attributes.src "static/img/banner-photo.jpg"
+        , Html.Attributes.src "/static/img/banner-photo.jpg"
         ]
         []
       , Html.div
@@ -94,8 +105,13 @@ customView ({ route } as model) =
     About ->
       Html.none
     Article id ->
+      model
+        |> getArticleById id
+        |> Maybe.map View.Article.view
+        |> Maybe.withDefault (View.Static.NotFound.view model)
+    Archives ->
       Html.none
     Contact ->
       Html.none
     NotFound ->
-      Html.none
+      View.Static.NotFound.view model

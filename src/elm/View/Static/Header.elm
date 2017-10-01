@@ -3,6 +3,7 @@ module View.Static.Header exposing (..)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Html.Extra
 import Style.Extra as Style
 import Types exposing (..)
 
@@ -13,7 +14,12 @@ view ({ menuOpen } as model) =
     [ Html.div
       [ Html.Attributes.class "navbar-brand" ]
       [ Html.a
-        [ Html.Attributes.class "navbar-brand--link" ]
+        [ Html.Attributes.class "navbar-brand--link"
+        , Html.Attributes.href "/"
+        , Html.Extra.onPreventClick
+          <| Navigation
+          <| ChangePage "/"
+        ]
         [ Html.text "Neptune" ]
       ]
     , navbarMenu model
@@ -29,20 +35,27 @@ navbarMenu { menuOpen, route } =
     , Html.Attributes.style
       [ if menuOpen then ("left", "0") else Style.none ]
     ]
-    [ link (route == Home) "Home"
-    , link (route == About) "About"
+    [ link (route == Home) "Home" "/"
+    , link (route == About) "About" "/about"
     , link (case route of
         Article _ ->
           True
+        Archives ->
+          True
         _ ->
-          False) "Archive"
-    , link (route == Contact) "Contact"
+          False) "Archives" "/archives"
+    , link (route == Contact) "Contact" "/contact"
     ]
 
-link : Bool -> String -> Html Msg
-link active label =
+link : Bool -> String -> String -> Html Msg
+link active label url =
   Html.a
-    [ Html.Attributes.class <| addActive active "navbar-menu--link" ]
+    [ Html.Attributes.class <| addActive active "navbar-menu--link"
+    , Html.Extra.onPreventClick
+      <| Navigation
+      <| ChangePage url
+    , Html.Attributes.href url
+    ]
     [ Html.text label ]
 
 addActive : Bool -> String -> String
@@ -55,7 +68,7 @@ hamburgerButton { menuOpen } =
     [ Html.Attributes.class <|
       addActive menuOpen "hamburger hamburger--vortex"
     , Html.Attributes.type_ "button"
-    , Html.Events.onClick ToggleMenu
+    , Html.Events.onClick <| HamburgerMenu ToggleMenu
     ]
     [ Html.span
       [ Html.Attributes.class "hamburger-box" ]

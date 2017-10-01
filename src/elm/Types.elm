@@ -1,7 +1,9 @@
 module Types exposing (..)
 
+import List.Extra as List
 import Navigation exposing (Location)
 import Window exposing (Size)
+import Date exposing (Date)
 import Article exposing (Article)
 
 type SpaNavigation
@@ -15,13 +17,18 @@ type Route
   = Home
   | About
   | Article String
+  | Archives
   | Contact
   | NotFound
 
+type MenuAction
+  = ToggleMenu
+
 type Msg
   = Navigation SpaNavigation
-  | ToggleMenu
+  | HamburgerMenu MenuAction
   | Resizes Size
+  | DateNow Date
 
 type alias Model =
   { location : Location
@@ -45,3 +52,7 @@ toggleMenu ({ menuOpen } as model) =
 closeMenu : Model -> Model
 closeMenu model =
   { model | menuOpen = False }
+
+getArticleById : String -> Model -> Maybe Article
+getArticleById id { articles } =
+  List.find (Article.isId id) articles
