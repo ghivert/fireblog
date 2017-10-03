@@ -3,7 +3,7 @@ module Main exposing (..)
 import Navigation exposing (Location)
 import Html exposing (Html)
 import Html.Attributes
-import Html.Extra as Html
+import Html.Extra
 import Update.Extra as Update
 import Window
 import Date exposing (Date)
@@ -14,9 +14,10 @@ import Routing
 import View.Home
 import View.Article
 import View.Contact
-import View.Static.Header as Header
-import View.Static.Footer as Footer
+import View.Static.Header
+import View.Static.Footer
 import View.Static.NotFound
+import View.Static.About
 import Seeds.Articles
 
 main : Program Never Model Msg
@@ -103,7 +104,7 @@ handleContactForm model contactAction =
 view : Model -> Html Msg
 view model =
   Html.div []
-    [ Header.view model
+    [ View.Static.Header.view model
     , Html.div
       [ Html.Attributes.class "body" ]
       [ Html.img
@@ -115,7 +116,7 @@ view model =
         [ Html.Attributes.class "container" ]
         [ customView model ]
       ]
-    , Footer.view
+    , View.Static.Footer.view
     ]
 
 customView : Model -> Html Msg
@@ -124,14 +125,14 @@ customView ({ route } as model) =
     Home ->
       View.Home.view model
     About ->
-      Html.none
+      View.Static.About.view model
     Article id ->
       model
         |> getArticleById id
         |> Maybe.map View.Article.view
         |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
-      Html.none
+      Html.Extra.none
     Contact ->
       View.Contact.view model
     NotFound ->
