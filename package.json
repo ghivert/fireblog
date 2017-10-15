@@ -39,6 +39,7 @@
     "bourbon": "^4.3.4",
     "hamburgers": "^0.9.1",
     "image-webpack-loader": "^3.4.2",
-    "normalize-css": "^2.3.1"
+    "normalize-css": "^2.3.1",
+    "uuid": "^3.1.0"
   }
 }

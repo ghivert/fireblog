@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Navigation exposing (Location)
 import Html exposing (Html)
@@ -8,8 +8,11 @@ import Update.Extra as Update
 import Window
 import Date exposing (Date)
 import Task
+import Json.Decode as Decode
+import Article.Decoder
 
 import Types exposing (..)
+import Article
 import Routing
 import View.Home
 import View.Article
@@ -18,7 +21,9 @@ import View.Static.Header
 import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
-import Seeds.Articles
+
+port requestPosts : String -> Cmd msg
+port getPosts : (Decode.Value -> msg) -> Sub msg
 
 main : Program Never Model Msg
 main =
@@ -31,7 +36,10 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Window.resizes Resizes
+  Sub.batch
+    [ Window.resizes Resizes
+    , getPosts GetPosts
+    ]
 
 init : Location -> (Model, Cmd Msg)
 init location =
@@ -43,7 +51,7 @@ init location =
     { email = ""
     , message = ""
     }
-  } ! [ Task.perform DateNow Date.now ]
+  } ! [ Task.perform DateNow Date.now, requestPosts "myself" ]
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({ menuOpen } as model) =
@@ -60,9 +68,16 @@ update msg ({ menuOpen } as model) =
       else
         model ! []
     DateNow date ->
-      { model | articles = Seeds.Articles.samples date } ! []
+      model ! []
     ContactForm action ->
       handleContactForm model action
+    GetPosts posts ->
+      posts
+        |> Decode.decodeValue Article.Decoder.decodePosts
+        |> Result.withDefault []
+        |> List.map Article.toUnifiedArticle
+        |> setArticlesIn model
+        |> Update.identity
 
 handleNavigation : Model -> SpaNavigation -> (Model, Cmd Msg)
 handleNavigation model navigation =

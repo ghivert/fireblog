@@ -1,5 +1,6 @@
 module Types exposing (..)
 
+import Json.Decode
 import List.Extra as List
 import Navigation exposing (Location)
 import Window exposing (Size)
@@ -35,6 +36,7 @@ type Msg
   | Resizes Size
   | DateNow Date
   | ContactForm ContactAction
+  | GetPosts Json.Decode.Value
 
 type alias ContactFields =
   { email : String
@@ -88,6 +90,10 @@ setMessageContact message ({ contactFields } as model) =
   contactFields
     |> setMessageField message
     |> asContactFieldsIn model
+
+setArticlesIn : Model -> List Article -> Model
+setArticlesIn model articles =
+    { model | articles = articles }
 
 getArticleById : String -> Model -> Maybe Article
 getArticleById id { articles } =

@@ -13,3 +13,7 @@ type alias Article =
 isId : String -> Article -> Bool
 isId id { uuid } =
   uuid == id
+
+toUnifiedArticle : (String, Article) -> Article
+toUnifiedArticle (id, article) =
+  { article | uuid = id }
