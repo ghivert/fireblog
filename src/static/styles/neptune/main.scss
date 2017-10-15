@@ -122,8 +122,9 @@
       input, textarea {
         margin-top: $medium-spacing;
         margin-bottom: $large-spacing;
-        padding: $small-spacing;
+        padding: $medium-spacing;
         color: $dark-grey;
+        border-radius: 7px;
       }
 
       textarea {
@@ -135,10 +136,17 @@
     &-submit {
       padding: $small-spacing 0;
       font-family: $lato;
-      background-color: $light-blue;
-      color: white;
+      background-color: white;
+      color: $light-blue;
       border: none;
       font-weight: 700;
+      border-radius: 30px;
+      border: 2px solid $light-blue;
+
+      &:hover {
+        color: white;
+        background-color: $light-blue;
+      }
     }
   }
 }

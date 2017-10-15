@@ -12,6 +12,8 @@ parseRoute =
     , map Contact <| s "contact"
     , map Archives <| s "archives"
     , map Article <| s "article" </> string
+    , map Dashboard <| s "dashboard"
+    , map Login <| s "login"
     ]
 
 parseLocation : Location -> Route

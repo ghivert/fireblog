@@ -29,7 +29,7 @@ view ({ menuOpen } as model) =
     ]
 
 navbarMenu : Model -> Html Msg
-navbarMenu { menuOpen, route } =
+navbarMenu { menuOpen, route, user } =
   Html.div
     [ Html.Attributes.class "navbar-menu"
     , Html.Attributes.style
@@ -44,7 +44,11 @@ navbarMenu { menuOpen, route } =
           True
         _ ->
           False) "Archives" "/archives"
-    , link (route == Contact) "Contact" "/contact"
+    , case user of
+      Just _ ->
+        link (route == Dashboard) "Dashboard" "/dashboard"
+      Nothing ->
+        link (route == Contact) "Contact" "/contact"
     ]
 
 link : Bool -> String -> String -> Html Msg

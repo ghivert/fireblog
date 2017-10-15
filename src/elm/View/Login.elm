@@ -1,4 +1,4 @@
-module View.Contact exposing (view)
+module View.Login exposing (..)
 
 import Html exposing (Html)
 import Html.Attributes
@@ -7,28 +7,23 @@ import Html.Events
 import Types exposing (..)
 
 view : Model -> Html Msg
-view { contactFields } =
+view { loginFields } =
   Html.div
     [ Html.Attributes.class "contact" ]
     [ Html.h1
       [ Html.Attributes.class "contact--title" ]
-      [ Html.text "Contact me for anything!" ]
-    , Html.p
-      [ Html.Attributes.class "contact--introduction" ]
-      [ Html.text
-        "I would be glad to discuss with you, and really happy to read what you think about this blog."
-      ]
-    , contactForm contactFields
+      [ Html.text "Log-In" ]
+    , loginForm loginFields
     ]
 
-contactForm : ContactFields -> Html Msg
-contactForm { email, message }=
+loginForm : LoginFields -> Html Msg
+loginForm { email, password } =
   Html.form
     [ Html.Attributes.class "contact--form"
-    , Html.Events.onSubmit <| ContactForm SendContactMail
+    , Html.Events.onSubmit <| LoginForm LoginUser
     ]
     [ emailInput email
-    , messageInput message
+    , passwordInput password
     , submitButton
     ]
 
@@ -36,7 +31,7 @@ emailInput : String -> Html Msg
 emailInput email =
   Html.label
     [ Html.Attributes.class "contact--form-email" ]
-    [ Html.span [] [ Html.text "Your e-mail:" ]
+    [ Html.span [] [ Html.text "E-mail:" ]
     , Html.input
       [ Html.Attributes.type_ "email"
       , Html.Attributes.name "email"
@@ -44,22 +39,23 @@ emailInput email =
       , Html.Attributes.required True
       , Html.Attributes.placeholder "email@example.com"
       , Html.Attributes.value email
-      , Html.Events.onInput (ContactForm << ContactEmailInput)
+      , Html.Events.onInput (LoginForm << LoginEmailInput)
       ]
       []
     ]
 
-messageInput : String -> Html Msg
-messageInput message =
+passwordInput : String -> Html Msg
+passwordInput password =
   Html.label
     [ Html.Attributes.class "contact--form-content" ]
-    [ Html.span [] [ Html.text "Your message:" ]
-    , Html.textarea
-      [ Html.Attributes.name "message"
+    [ Html.span [] [ Html.text "Password:" ]
+    , Html.input
+      [ Html.Attributes.type_ "password"
+      , Html.Attributes.name "password"
       , Html.Attributes.autocomplete False
       , Html.Attributes.required True
-      , Html.Attributes.value message
-      , Html.Events.onInput (ContactForm << ContactMessageInput)
+      , Html.Attributes.value password
+      , Html.Events.onInput (LoginForm << LoginPasswordInput)
       ]
       []
     ]
