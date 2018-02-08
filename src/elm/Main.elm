@@ -14,17 +14,22 @@ import Json.Decode as Decode
 import Types exposing (..)
 import Article
 import Article.Decoder
+import Article.Encoder
+import Seeds.Articles
 import User.Decoder
 import Routing
 import View.Home
 import View.Article
 import View.Contact
 import View.Login
+import View.Dashboard
 import View.Static.Header
 import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
 
+port createPost : (String, Decode.Value) -> Cmd msg
+port createdPost : (Bool -> msg) -> Sub msg
 port requestPosts : String -> Cmd msg
 port getPosts : (Decode.Value -> msg) -> Sub msg
 port signInUser : (String, String) -> Cmd msg
@@ -46,6 +51,7 @@ subscriptions model =
     [ Window.resizes Resizes
     , getPosts GetPosts
     , redirectToDashboard GetUser
+    , createdPost AcceptPost
     ]
 
 init : Location -> (Model, Cmd Msg)
@@ -63,10 +69,15 @@ init location =
     , password = ""
     }
   , user = Nothing
-  } ! [ Task.perform DateNow Date.now, requestPosts "myself" ]
+  , date = Nothing
+  } ! [ getActualTime, requestPosts "myself" ]
+
+getActualTime : Cmd Msg
+getActualTime =
+  Task.perform DateNow Date.now
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({ menuOpen } as model) =
+update msg ({ menuOpen, date } as model) =
   case msg of
     Navigation navigation ->
       handleNavigation navigation model
@@ -80,7 +91,9 @@ update msg ({ menuOpen } as model) =
       else
         model ! []
     DateNow date ->
-      model ! []
+      model
+        |> setDate (Just date)
+        |> Update.identity
     ContactForm action ->
       handleContactForm action model
     LoginForm action ->
@@ -98,6 +111,20 @@ update msg ({ menuOpen } as model) =
         |> Result.toMaybe
         |> setUserIn model
         |> redirectIfLogin
+    AcceptPost accepted ->
+      let debug = Debug.log "accepted" accepted in
+      model ! []
+    SubmitArticles ->
+      case date of
+        Nothing ->
+          model ! []
+        Just date ->
+          date
+            |> Seeds.Articles.samples
+            |> List.map Article.Encoder.encodeArticle
+            |> List.map ((,) "myself")
+            |> List.map createPost
+            |> (!) model
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
 handleNavigation navigation model =
@@ -202,8 +229,11 @@ customView ({ route } as model) =
     About ->
       View.Static.About.view model
     Article id ->
-      model
-        |> getArticleById id
+      id
+        |> Html.Extra.getUuidPart
+        |> Maybe.withDefault "nothing"
+        |> (++) "-"
+        |> flip getArticleById model
         |> Maybe.map View.Article.view
         |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
@@ -211,7 +241,7 @@ customView ({ route } as model) =
     Contact ->
       View.Contact.view model
     Dashboard ->
-      Html.Extra.none
+      View.Dashboard.view model
     Login ->
       View.Login.view model
     NotFound ->

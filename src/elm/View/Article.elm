@@ -89,16 +89,16 @@ tagLink tag =
     [ Html.text tag ]
 
 readMoreLink : Article -> Html Msg
-readMoreLink { content, uuid } =
+readMoreLink { content, title, uuid } =
   if String.length content > 500 then
     Html.div
       [ Html.Attributes.class "article--read-more" ]
       [ Html.a
-        [ Html.Attributes.href <| "/article/" ++ uuid
+        [ Html.Attributes.href <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
         , Html.Extra.onPreventClick
           <| Navigation
           <| ChangePage
-          <| "/article/" ++ uuid
+          <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
         ]
         [ Html.text "Read More"]
       ]

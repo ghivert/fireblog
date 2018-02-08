@@ -16,21 +16,26 @@ view { articles } =
       [ Html.text "404" ]
     , Html.div
       [ Html.Attributes.class "not-found--text" ]
-      [ Html.text "Page Not Found" ]
+      [ Html.text "Page non trouvée"
+        -- "Page Not Found"
+      ]
     , case lastArticle of
       Nothing ->
         Html.Extra.none
-      Just { uuid } ->
+      Just { title, uuid } ->
         Html.div
           [ Html.Attributes.class "not-found--proposition" ]
-          [ Html.text "Maybe you're looking for the "
+          [ Html.text "Peut-être cherchez vous "
+            -- "Maybe you're looking for the "
           , Html.a
-            [ Html.Attributes.href <| "/article/" ++ uuid
+            [ Html.Attributes.href <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
             , Html.Extra.onPreventClick
               <| Navigation
               <| ChangePage
-              <| "/article/" ++ uuid
+              <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
             ]
-            [ Html.text "last article?" ]
+            [ Html.text "le dernier article"
+              -- "last article?"
+            ]
           ]
     ]

@@ -12,11 +12,14 @@ view { contactFields } =
     [ Html.Attributes.class "contact" ]
     [ Html.h1
       [ Html.Attributes.class "contact--title" ]
-      [ Html.text "Contact me for anything!" ]
+      [ Html.text "Contactez-moi pour n'importe quoi !"
+        -- "Contact me for anything!"
+      ]
     , Html.p
       [ Html.Attributes.class "contact--introduction" ]
       [ Html.text
-        "I would be glad to discuss with you, and really happy to read what you think about this blog."
+        "Je serais ravi de discuter avec vous, et très content de lire ce que vous pensez de ce blog."
+        -- "I would be glad to discuss with you, and really happy to read what you think about this blog."
       ]
     , contactForm contactFields
     ]
@@ -36,13 +39,16 @@ emailInput : String -> Html Msg
 emailInput email =
   Html.label
     [ Html.Attributes.class "contact--form-email" ]
-    [ Html.span [] [ Html.text "Your e-mail:" ]
+    [ Html.span []
+      [ Html.text "Votre e-mail :"
+        -- "Your e-mail:"
+      ]
     , Html.input
       [ Html.Attributes.type_ "email"
       , Html.Attributes.name "email"
       , Html.Attributes.autocomplete True
       , Html.Attributes.required True
-      , Html.Attributes.placeholder "email@example.com"
+      , Html.Attributes.placeholder "email@exemple.com"
       , Html.Attributes.value email
       , Html.Events.onInput (ContactForm << ContactEmailInput)
       ]
@@ -53,7 +59,10 @@ messageInput : String -> Html Msg
 messageInput message =
   Html.label
     [ Html.Attributes.class "contact--form-content" ]
-    [ Html.span [] [ Html.text "Your message:" ]
+    [ Html.span []
+      [ Html.text "Votre message :"
+        -- "Your message:"
+      ]
     , Html.textarea
       [ Html.Attributes.name "message"
       , Html.Attributes.autocomplete False
@@ -71,4 +80,6 @@ submitButton =
     , Html.Attributes.type_ "submit"
     , Html.Attributes.value "Submit"
     ]
-    [ Html.text "Submit" ]
+    [ Html.text "Envoyer"
+      -- "Submit"
+    ]

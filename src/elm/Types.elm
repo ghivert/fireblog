@@ -49,6 +49,8 @@ type Msg
   | LoginForm LoginAction
   | GetPosts Json.Decode.Value
   | GetUser Json.Decode.Value
+  | AcceptPost Bool
+  | SubmitArticles
 
 type alias ContactFields =
   { email : String
@@ -80,6 +82,7 @@ type alias Model =
   , user : Maybe User
   , contactFields : ContactFields
   , loginFields : LoginFields
+  , date : Maybe Date
   }
 
 setLocation : Location -> Model -> Model
@@ -117,6 +120,15 @@ setUser =
 setUserIn : Model -> Maybe User -> Model
 setUserIn model user =
   { model | user = user }
+
+
+setDate : Maybe Date -> Model -> Model
+setDate =
+  flip setDateIn
+
+setDateIn : Model -> Maybe Date -> Model
+setDateIn model date =
+  { model | date = date }
 
 setEmailContact : String -> Model -> Model
 setEmailContact email ({ contactFields } as model) =

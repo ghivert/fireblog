@@ -1,10 +1,9 @@
 import uuid from 'uuid'
 
-export default function create(user, title, content) {
+export default function create(user, content) {
   var database = firebase.database()
 
-  database.ref('user/' + user + '/post').set({
-    title: title,
-    content: content
-  })
+  content.date = new Date(Date.now()).toISOString()
+
+  return database.ref('user/' + user + '/posts').push(content)
 }

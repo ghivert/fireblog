@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "bourbon": "^4.3.4",
+    "firebase": "^4.9.0",
     "hamburgers": "^0.9.1",
     "image-webpack-loader": "^3.4.2",
     "normalize-css": "^2.3.1",

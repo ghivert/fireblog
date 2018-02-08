@@ -15,5 +15,5 @@ isId id { uuid } =
   uuid == id
 
 toUnifiedArticle : (String, Article) -> Article
-toUnifiedArticle (id, article) =
-  { article | uuid = id }
+toUnifiedArticle (uuid, article) =
+  { article | uuid = uuid }

@@ -125,6 +125,11 @@
         padding: $medium-spacing;
         color: $dark-grey;
         border-radius: 7px;
+        outline: none;
+
+        &:focus {
+          border: 1px solid black;
+        }
       }
 
       textarea {
@@ -214,12 +219,17 @@
     min-width: 200px;
     padding: 0 $xlarge-spacing !important;
 
-    &--link:first-child {
-      padding-top: $xxlarge-spacing !important;
-    }
-
     &--link {
       font-size: 1.3em;
+      outline: none;
+
+      &:first-child {
+        padding-top: $xxlarge-spacing !important;
+      }
+
+      &:focus, &:active {
+        outline: none;
+      }
     }
   }
 }

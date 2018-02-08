@@ -14,3 +14,14 @@ onPreventClick message =
     { stopPropagation = True
     , preventDefault = True
     } (Json.Decode.succeed message)
+
+correctUrlString : String -> String
+correctUrlString =
+  String.toLower >> String.split " " >> String.join "-"
+
+getUuidPart : String -> Maybe String
+getUuidPart complete =
+  complete
+    |> String.split "-"
+    |> List.reverse
+    |> List.head
