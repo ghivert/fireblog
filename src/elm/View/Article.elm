@@ -122,7 +122,9 @@ readMoreLink { content, title, uuid } =
           <| ChangePage
           <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
         ]
-        [ Html.text "Read More"]
+        [ Html.text "Lire la suite"
+          -- "Read More"
+        ]
       ]
   else
     Html.Extra.none
