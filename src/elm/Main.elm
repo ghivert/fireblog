@@ -20,6 +20,7 @@ import User.Decoder
 import Routing
 import View.Home
 import View.Article
+import View.Archives
 import View.Contact
 import View.Login
 import View.Dashboard
@@ -237,7 +238,7 @@ customView ({ route } as model) =
         |> Maybe.map View.Article.view
         |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
-      Html.Extra.none
+      View.Archives.view model
     Contact ->
       View.Contact.view model
     Dashboard ->

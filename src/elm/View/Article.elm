@@ -1,4 +1,4 @@
-module View.Article exposing (view, preview)
+module View.Article exposing (view, preview, directLink)
 
 import Html exposing (Html)
 import Html.Attributes
@@ -44,6 +44,15 @@ preview ({ title, content, uuid, tags, date } as article) =
       [ Html.Attributes.class "article--tags" ]
       [ tagsLink tags ]
     , readMoreLink article
+    ]
+
+directLink : Article -> Html Msg
+directLink ({ title, uuid, date } as article) =
+  Html.div
+    [ Html.Attributes.class "archives-article" ]
+    [ Html.h4
+      [ Html.Attributes.class "archives-article--title" ]
+      [ Html.text title ]
     ]
 
 shorten : String -> String
