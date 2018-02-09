@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "guillaume-blog"
+    "default": "guillaume-blog",
+    "master": "guillaume-blog"
   }
 }

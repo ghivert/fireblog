@@ -5,7 +5,7 @@ import Html.Attributes
 import Html.Extra
 import Date exposing (Date)
 import Date.Extra.Format
-import Date.Extra.Config.Config_en_us
+import Date.Extra.Config.Config_fr_fr
 
 import Article exposing (Article)
 import Types exposing (..)
@@ -23,9 +23,9 @@ view { title, content, tags, date } =
       , Html.p
         [ Html.Attributes.class "article--content" ]
         [ Html.text content ]
-      , Html.div
-        [ Html.Attributes.class "article--tags" ]
-        [ tagsLink tags ]
+      -- , Html.div
+      --   [ Html.Attributes.class "article--tags" ]
+      --   [ tagsLink tags ]
       ]
     ]
 
@@ -35,14 +35,22 @@ preview ({ title, content, uuid, tags, date } as article) =
     [ Html.Attributes.class "article" ]
     [ Html.h1
       [ Html.Attributes.class "article--title" ]
-      [ Html.text title ]
+      [ Html.a
+        [ Html.Attributes.href <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
+        , Html.Extra.onPreventClick
+          <| Navigation
+          <| ChangePage
+          <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
+        ]
+        [ Html.text title ]
+      ]
     , Html.p
       [ Html.Attributes.class "article--content" ]
       [ Html.text <| shorten content ]
     , dateView date
-    , Html.div
-      [ Html.Attributes.class "article--tags" ]
-      [ tagsLink tags ]
+    -- , Html.div
+    --   [ Html.Attributes.class "article--tags" ]
+    --   [ tagsLink tags ]
     , readMoreLink article
     ]
 
@@ -70,14 +78,19 @@ dateView date =
     [ Html.Attributes.class "article--date" ]
     [ Html.text <|
       Date.Extra.Format.format
-        Date.Extra.Config.Config_en_us.config
-        englishDateFormat
+        Date.Extra.Config.Config_fr_fr.config
+        frenchDateFormat
         date
     ]
 
+{-| Unused while I18n not activated. -}
 englishDateFormat : String
 englishDateFormat =
-  "Posted on %d %B %Y."
+  "Posted on %d %B %Y"
+
+frenchDateFormat : String
+frenchDateFormat =
+  "Posté le %d %B %Y"
 
 tagsLink : List String -> Html Msg
 tagsLink tags =

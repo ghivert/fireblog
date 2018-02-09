@@ -71,6 +71,10 @@
     &--title {
       font-family: $lato;
       font-size: 1.5em;
+
+      a {
+        color: #050505;
+      }
     }
 
     &--content {
