@@ -51,7 +51,7 @@
 
 .legal-disclaimer {
   margin-bottom: $medium-spacing;
-  padding: $small-spacing;
+  padding: $xlarge-spacing $small-spacing;
   color: $light-grey;
   text-align: center;
   font-size: 0.7em;
@@ -99,6 +99,22 @@
     &--tags {
       font-family: $lato;
     }
+  }
+}
+
+.about {
+  &--title {
+    font-family: $lato;
+    font-size: 1.5em;
+    padding-top: $xlarge-spacing;
+  }
+
+  &--paragraph {
+    color: $dark-grey;
+    font-size: 0.95em;
+    line-height: 1.5em;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
   }
 }
 
@@ -175,6 +191,37 @@
   }
 
   &--proposition {
+  }
+}
+
+.archives {
+  padding: $large-spacing 0;
+
+  &--metadata {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .archives-article {
+      font-family: $lato;
+      font-size: 1.1em;
+
+      &--title {
+        margin: 0;
+        padding: $small-spacing;
+        font-weight: 500;
+      }
+
+      a {
+        color: $dark-grey;
+      }
+    }
+
+    .archives--date {
+      align-self: flex-end;
+      color: $light-grey;
+      font-size: 0.8em;
+    }
   }
 }
 

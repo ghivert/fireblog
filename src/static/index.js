@@ -9,6 +9,7 @@ import '../js/config'
 const program = Elm.Main.embed(document.getElementById('main'))
 
 program.ports.requestPosts.subscribe(function(userName) {
+  console.log("Request posts!")
   Post.list(userName).then(function(posts) {
     program.ports.getPosts.send(posts.val())
   })
@@ -33,12 +34,14 @@ program.ports.signInUser.subscribe(function(mailAndPassword) {
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
-    program.ports.redirectToDashboard.send(user)
+    program.ports.authChanges.send(user)
+  } else {
+    program.ports.authChanges.send({disconnected: true})
   }
 })
 
 program.ports.logoutUser.subscribe(function(email) {
   firebase.auth().signOut().then(function() {
-    console.log('Successfully logout')
+    console.log('Successfully logout!')
   })
 })

@@ -1,4 +1,4 @@
-module View.Article exposing (view, preview, directLink)
+module View.Article exposing (view, preview, archivesLink, articleUrl)
 
 import Html exposing (Html)
 import Html.Attributes
@@ -19,7 +19,7 @@ view { title, content, tags, date } =
       [ Html.h1
         [ Html.Attributes.class "article--title" ]
         [ Html.text title ]
-      , dateView date
+      , articleDateView date
       , Html.p
         [ Html.Attributes.class "article--content" ]
         [ Html.text content ]
@@ -35,33 +35,44 @@ preview ({ title, content, uuid, tags, date } as article) =
     [ Html.Attributes.class "article" ]
     [ Html.h1
       [ Html.Attributes.class "article--title" ]
-      [ Html.a
-        [ Html.Attributes.href <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
-        , Html.Extra.onPreventClick
-          <| Navigation
-          <| ChangePage
-          <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
-        ]
-        [ Html.text title ]
-      ]
+      [ articleLink article ]
     , Html.p
       [ Html.Attributes.class "article--content" ]
       [ Html.text <| shorten content ]
-    , dateView date
+    , articleDateView date
     -- , Html.div
     --   [ Html.Attributes.class "article--tags" ]
     --   [ tagsLink tags ]
     , readMoreLink article
     ]
 
-directLink : Article -> Html Msg
-directLink ({ title, uuid, date } as article) =
-  Html.div
-    [ Html.Attributes.class "archives-article" ]
-    [ Html.h4
-      [ Html.Attributes.class "archives-article--title" ]
-      [ Html.text title ]
+articleLink : Article -> Html Msg
+articleLink ({ title } as article) =
+  Html.a
+    [ Html.Attributes.href <| articleUrl article
+    , Html.Extra.onPreventClick
+      <| Navigation
+      <| ChangePage
+      <| articleUrl article
     ]
+    [ Html.text title ]
+
+articleUrl : Article -> String
+articleUrl { title, uuid } =
+  "/article/" ++ Html.Extra.correctUrlString title ++ "-" ++ uuid
+
+archivesLink : Article -> Html Msg
+archivesLink ({ date } as article) =
+    Html.div
+      [ Html.Attributes.class "archives--metadata" ]
+      [ Html.div
+        [ Html.Attributes.class "archives-article" ]
+        [ Html.h4
+          [ Html.Attributes.class "archives-article--title" ]
+          [ articleLink article ]
+        ]
+      , archivesDateView date
+      ]
 
 shorten : String -> String
 shorten string =
@@ -72,16 +83,24 @@ shorten string =
   else
     string
 
-dateView : Date -> Html Msg
-dateView date =
+dateView : String -> Date -> Html Msg
+dateView class date =
   Html.div
-    [ Html.Attributes.class "article--date" ]
+    [ Html.Attributes.class class ]
     [ Html.text <|
       Date.Extra.Format.format
         Date.Extra.Config.Config_fr_fr.config
         frenchDateFormat
         date
     ]
+
+articleDateView : Date -> Html Msg
+articleDateView =
+  dateView "article--date"
+
+archivesDateView : Date -> Html Msg
+archivesDateView =
+  dateView "archives--date"
 
 {-| Unused while I18n not activated. -}
 englishDateFormat : String
@@ -111,16 +130,16 @@ tagLink tag =
     [ Html.text tag ]
 
 readMoreLink : Article -> Html Msg
-readMoreLink { content, title, uuid } =
+readMoreLink ({ content, title, uuid } as article) =
   if String.length content > 500 then
     Html.div
       [ Html.Attributes.class "article--read-more" ]
       [ Html.a
-        [ Html.Attributes.href <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
+        [ Html.Attributes.href <| articleUrl article
         , Html.Extra.onPreventClick
           <| Navigation
           <| ChangePage
-          <| "/article/" ++ Html.Extra.correctUrlString title ++ uuid
+          <| articleUrl article
         ]
         [ Html.text "Lire la suite"
           -- "Read More"

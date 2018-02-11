@@ -109,6 +109,10 @@ asLoginFieldsIn : Model -> LoginFields -> Model
 asLoginFieldsIn model loginFields =
   { model | loginFields = loginFields }
 
+setArticles : List Article -> Model -> Model
+setArticles =
+  flip setArticlesIn
+
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
     { model | articles = articles }

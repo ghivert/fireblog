@@ -1,4 +1,4 @@
-port module Main exposing (..)
+module Main exposing (..)
 
 import Navigation exposing (Location)
 import Html exposing (Html)
@@ -10,6 +10,7 @@ import Window
 import Date exposing (Date)
 import Task
 import Json.Decode as Decode
+import Maybe.Extra as Maybe
 
 import Types exposing (..)
 import Article
@@ -28,14 +29,7 @@ import View.Static.Header
 import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
-
-port createPost : (String, Decode.Value) -> Cmd msg
-port createdPost : (Bool -> msg) -> Sub msg
-port requestPosts : String -> Cmd msg
-port getPosts : (Decode.Value -> msg) -> Sub msg
-port signInUser : (String, String) -> Cmd msg
-port logoutUser : String -> Cmd msg
-port redirectToDashboard : (Decode.Value -> msg) -> Sub msg
+import Firebase
 
 main : Program Never Model Msg
 main =
@@ -50,9 +44,9 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
     [ Window.resizes Resizes
-    , getPosts GetPosts
-    , redirectToDashboard GetUser
-    , createdPost AcceptPost
+    , Firebase.requestedPosts GetPosts
+    , Firebase.authChanges GetUser
+    , Firebase.createdPost AcceptPost
     ]
 
 init : Location -> (Model, Cmd Msg)
@@ -71,7 +65,7 @@ init location =
     }
   , user = Nothing
   , date = Nothing
-  } ! [ getActualTime, requestPosts "myself" ]
+  } ! [ getActualTime, Firebase.requestPosts "myself" ]
 
 getActualTime : Cmd Msg
 getActualTime =
@@ -124,7 +118,7 @@ update msg ({ menuOpen, date } as model) =
             |> Seeds.Articles.samples
             |> List.map Article.Encoder.encodeArticle
             |> List.map ((,) "myself")
-            |> List.map createPost
+            |> List.map Firebase.createPost
             |> (!) model
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
@@ -154,7 +148,7 @@ handleContactForm : ContactAction -> Model -> (Model, Cmd Msg)
 handleContactForm contactAction model =
   case contactAction of
     SendContactMail ->
-      model ! []
+      model ! [] -- TODO SendGrid integration.
     ContactEmailInput email ->
       model
         |> setEmailContact email
@@ -168,14 +162,14 @@ handleLoginForm : LoginAction -> Model -> (Model, Cmd Msg)
 handleLoginForm loginAction ({ loginFields, user } as model) =
   case loginAction of
     LoginUser ->
-      model ! [ signInUser (loginFields.email, loginFields.password) ]
+      model ! [ Firebase.signInUser (loginFields.email, loginFields.password) ]
     LogoutUser ->
       case user of
         Just { email } ->
           model
             |> setUser Nothing
             |> Update.identity
-            |> Update.addCmd (logoutUser email)
+            |> Update.addCmd (Firebase.logoutUser email)
             :> handleNavigation (ChangePage "/")
         Nothing ->
           model ! [ Navigation.newUrl "/" ]
@@ -232,9 +226,8 @@ customView ({ route } as model) =
     Article id ->
       id
         |> Html.Extra.getUuidPart
-        |> Maybe.withDefault "nothing"
-        |> (++) "-"
-        |> flip getArticleById model
+        |> Maybe.map (flip getArticleById model)
+        |> Maybe.join
         |> Maybe.map View.Article.view
         |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
