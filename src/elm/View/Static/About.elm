@@ -9,7 +9,7 @@ view : Model -> Html Msg
 view model =
   Html.div
     [ Html.Attributes.class "about" ]
-    [ aboutTitle "Qui suis-je ?" -- "Who am I?"
+    [ aboutTitle "Qui suis-je ?"
     , aboutParagraph aboutMe
     , aboutTitle "Pourquoi écrire en français ?"
     , aboutParagraph whyFrench
@@ -30,7 +30,6 @@ aboutTitle content =
 aboutMe : String
 aboutMe =
   "Architecte logiciel polyglotte, je travaille majoritairement avec des langages fonctionnels. Provenant du milieu académique (l'université Paris 6), je travaille aujourd'hui en freelance avec des startups. Passionné de technologie et d'informatique, je souhaite voir le français (et la France) comme la future langue (et le futur pays) de l'informatique moderne !"
-  -- "I'm a polyglot software architect, working mainly with functional language. Coming from Academic (Paris 6 University), I'm mostly working with startups, as a freelance."
 
 whyFrench : String
 whyFrench =

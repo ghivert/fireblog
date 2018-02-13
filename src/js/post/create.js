@@ -1,5 +1,3 @@
-import uuid from 'uuid'
-
 export default function create(user, content) {
   var database = firebase.database()
 

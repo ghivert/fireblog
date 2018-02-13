@@ -17,9 +17,7 @@ view { articles } =
       [ Html.text "404" ]
     , Html.div
       [ Html.Attributes.class "not-found--text" ]
-      [ Html.text "Page non trouvée"
-        -- "Page Not Found"
-      ]
+      [ Html.text "Page non trouvée" ]
     , case lastArticle of
       Nothing ->
         Html.Extra.none
@@ -27,7 +25,6 @@ view { articles } =
         Html.div
           [ Html.Attributes.class "not-found--proposition" ]
           [ Html.text "Peut-être cherchez vous "
-            -- "Maybe you're looking for the "
           , Html.a
             [ Html.Attributes.href <| View.Article.articleUrl article
             , Html.Extra.onPreventClick
@@ -35,8 +32,6 @@ view { articles } =
               <| ChangePage
               <| View.Article.articleUrl article
             ]
-            [ Html.text "le dernier article"
-              -- "last article?"
-            ]
+            [ Html.text "le dernier article" ]
           ]
     ]

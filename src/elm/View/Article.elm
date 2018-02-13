@@ -141,9 +141,7 @@ readMoreLink ({ content, title, uuid } as article) =
           <| ChangePage
           <| articleUrl article
         ]
-        [ Html.text "Lire la suite"
-          -- "Read More"
-        ]
+        [ Html.text "Lire la suite" ]
       ]
   else
     Html.Extra.none

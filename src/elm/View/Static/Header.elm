@@ -36,12 +36,8 @@ navbarMenu { menuOpen, route, user } =
       [ if menuOpen then ("left", "0") else Style.none ]
     ]
     [ link (route == Home) "Accueil" "/"
-      -- "Home" "/"
     , link (route == About) "À propos" "/about"
-      -- "About" "/about"
     , link (case route of
-        -- Article _ ->
-        --   True
         Archives ->
           True
         _ ->

@@ -1,6 +1,5 @@
 import 'normalize-css'
 import './styles/main.scss'
-import uuid from 'uuid'
 import Post from '../js/post'
 import Elm from '../elm/Main'
 import '../js/config'

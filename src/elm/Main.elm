@@ -44,7 +44,13 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
     [ Window.resizes Resizes
-    , Firebase.requestedPosts GetPosts
+    , firebaseSubscriptions model
+    ]
+
+firebaseSubscriptions : Model -> Sub Msg
+firebaseSubscriptions model =
+  Sub.batch
+    [ Firebase.requestedPosts GetPosts
     , Firebase.authChanges GetUser
     , Firebase.createdPost AcceptPost
     ]
