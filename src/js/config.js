@@ -1,4 +1,5 @@
 // Initialize Firebase. Replace the content with your initializer.
+// See README for more information.
 var config = {
   apiKey: "AIzaSyD9RQYEug-14kHLFzeZMLf88Cn4XHeJGP8",
   authDomain: "guillaume-blog.firebaseapp.com",

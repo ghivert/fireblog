@@ -1,10 +1,13 @@
+# elm and JS stuff
 elm-stuff/
 node_modules/
 tmp/
 dist/
 
+# OS stuff
 .DS_Store
 *~
 Thumbs.db
 
+# Firebase generated files
 firebase-debug.log
