@@ -221,6 +221,14 @@
           color: white;
           background-color: $light-blue;
         }
+        &[disabled] {
+          color: $light-grey;
+          border-color: $light-grey;
+          &:hover {
+            background-color: white;
+            color: $light-grey;
+          }
+        }
       }
     }
   }

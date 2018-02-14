@@ -72,25 +72,23 @@ newArticleEdition ({ title, content, focused } as newArticleFields) =
 
 buttonRow : NewArticleFields -> Html NewArticleAction
 buttonRow { title, content, previewed } =
-  let previewButtonText = if previewed then "Retourner à l'édition" else "Prévisualiser" in
+  let previewButtonText = if previewed then "Retourner à l'édition" else "Prévisualiser"
+      activatedButton = title == "" || content == ""
+  in
   Html.div
     [ Html.Attributes.class "dashboard--button-row" ]
-    [ flip Html.button [ Html.text "Envoyer" ]
-      <| List.append
-        [ Html.Attributes.value "Envoyer"
-        , Html.Attributes.style [ ("flex", "0.5") ]
-        ]
-        <| if title == "" || content == "" then
-            [ Html.Attributes.disabled True ]
-          else
-            [ Html.Events.onClick NewArticleSubmit ]
-    , flip Html.button [ Html.text previewButtonText ]
-      <| List.append
-        [ Html.Attributes.value previewButtonText
-        , Html.Attributes.style [ ("flex", "1") ]
-        ]
-        <| if title == "" || content == "" then
-            [ Html.Attributes.disabled True ]
-          else
-            [ Html.Events.onClick NewArticlePreview ]
+    [ Html.button
+      [ Html.Attributes.value "Envoyer"
+      , Html.Attributes.style [ ("flex", "0.5") ]
+      , Html.Attributes.disabled activatedButton
+      , Html.Events.onClick NewArticleSubmit
+      ]
+      [ Html.text "Envoyer" ]
+    , Html.button
+      [ Html.Attributes.value previewButtonText
+      , Html.Attributes.style [ ("flex", "1") ]
+      , Html.Events.onClick NewArticlePreview
+      , Html.Attributes.disabled activatedButton
+      ]
+      [ Html.text previewButtonText ]
     ]
