@@ -269,10 +269,10 @@ customView ({ route, user } as model) =
     Contact ->
       Html.map ContactForm <| View.Contact.view model
     Dashboard ->
-      case user of
-        Nothing ->
-          View.Static.NotFound.view model
-        Just user ->
+      -- case user of
+        -- Nothing ->
+          -- View.Static.NotFound.view model
+        -- Just user ->
           View.Dashboard.view model
     Login ->
       Html.map LoginForm <| View.Login.view model

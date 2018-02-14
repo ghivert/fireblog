@@ -3,6 +3,7 @@ module View.Dashboard exposing (..)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Events
+import Markdown
 
 import Types exposing (..)
 
@@ -33,7 +34,12 @@ newArticlePreview ({ title, content } as newArticleFields) =
     [ Html.text "Nouvel article | Prévisualisation" ]
   , Html.h3 []
     [ Html.text title ]
-  -- Preview in markdown
+  , Html.img
+    [ Html.Attributes.src "/static/img/neptune/separator.png"
+    , Html.Attributes.style
+      [ ("align-self", "flex-start") ]
+    ] []
+  , Markdown.toHtml [] content
   , buttonRow newArticleFields
   ]
 
@@ -65,20 +71,26 @@ newArticleEdition ({ title, content, focused } as newArticleFields) =
   ]
 
 buttonRow : NewArticleFields -> Html NewArticleAction
-buttonRow { previewed } =
+buttonRow { title, content, previewed } =
   let previewButtonText = if previewed then "Retourner à l'édition" else "Prévisualiser" in
   Html.div
     [ Html.Attributes.class "dashboard--button-row" ]
-    [ Html.button
-      [ Html.Events.onClick NewArticleSubmit
-      , Html.Attributes.value "Envoyer"
-      , Html.Attributes.style [ ("flex", "0.5") ]
-      ]
-      [ Html.text "Envoyer" ]
-    , Html.button
-      [ Html.Events.onClick NewArticlePreview
-      , Html.Attributes.value previewButtonText
-      , Html.Attributes.style [ ("flex", "1") ]
-      ]
-      [ Html.text previewButtonText ]
+    [ flip Html.button [ Html.text "Envoyer" ]
+      <| List.append
+        [ Html.Attributes.value "Envoyer"
+        , Html.Attributes.style [ ("flex", "0.5") ]
+        ]
+        <| if title == "" || content == "" then
+            [ Html.Attributes.disabled True ]
+          else
+            [ Html.Events.onClick NewArticleSubmit ]
+    , flip Html.button [ Html.text previewButtonText ]
+      <| List.append
+        [ Html.Attributes.value previewButtonText
+        , Html.Attributes.style [ ("flex", "1") ]
+        ]
+        <| if title == "" || content == "" then
+            [ Html.Attributes.disabled True ]
+          else
+            [ Html.Events.onClick NewArticlePreview ]
     ]
