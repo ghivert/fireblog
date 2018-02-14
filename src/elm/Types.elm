@@ -40,6 +40,13 @@ type LoginAction
   | LoginEmailInput String
   | LoginPasswordInput String
 
+type NewArticleAction
+  = NewArticleTitle String
+  | NewArticleContent String
+  | NewArticleSubmit
+  | NewArticleToggler
+  | NewArticlePreview
+
 type Msg
   = Navigation SpaNavigation
   | HamburgerMenu MenuAction
@@ -47,10 +54,10 @@ type Msg
   | DateNow Date
   | ContactForm ContactAction
   | LoginForm LoginAction
+  | NewArticleForm NewArticleAction
   | GetPosts Json.Decode.Value
   | GetUser Json.Decode.Value
   | AcceptPost Bool
-  | SubmitArticles
 
 type alias ContactFields =
   { email : String
@@ -74,15 +81,39 @@ setPasswordField : String -> LoginFields -> LoginFields
 setPasswordField password fields =
   { fields | password = password }
 
+type alias NewArticleFields =
+  { title : String
+  , content : String
+  , focused : Bool
+  , previewed : Bool
+  }
+
+setTitleField : String -> NewArticleFields -> NewArticleFields
+setTitleField title fields =
+  { fields | title = title }
+
+setContentField : String -> NewArticleFields -> NewArticleFields
+setContentField content fields =
+  { fields | content = content }
+
+toggleFocus : NewArticleFields -> NewArticleFields
+toggleFocus ({ focused } as fields) =
+  { fields | focused = not focused }
+
+togglePreview : NewArticleFields -> NewArticleFields
+togglePreview ({ previewed } as fields) =
+  { fields | previewed = not previewed }
+
 type alias Model =
   { location : Location
   , route : Route
   , articles : List Article
   , menuOpen : Bool
   , user : Maybe User
+  , date : Maybe Date
   , contactFields : ContactFields
   , loginFields : LoginFields
-  , date : Maybe Date
+  , newArticleFields : NewArticleFields
   }
 
 setLocation : Location -> Model -> Model
@@ -109,6 +140,10 @@ asLoginFieldsIn : Model -> LoginFields -> Model
 asLoginFieldsIn model loginFields =
   { model | loginFields = loginFields }
 
+asNewArticleFieldsIn : Model -> NewArticleFields -> Model
+asNewArticleFieldsIn model newArticleFields =
+  { model | newArticleFields = newArticleFields }
+
 setArticles : List Article -> Model -> Model
 setArticles =
   flip setArticlesIn
@@ -124,7 +159,6 @@ setUser =
 setUserIn : Model -> Maybe User -> Model
 setUserIn model user =
   { model | user = user }
-
 
 setDate : Maybe Date -> Model -> Model
 setDate =
@@ -157,6 +191,30 @@ setPasswordLogin password ({ loginFields } as model) =
   loginFields
     |> setPasswordField password
     |> asLoginFieldsIn model
+
+setNewArticleTitle : String -> Model -> Model
+setNewArticleTitle title ({ newArticleFields } as model) =
+  newArticleFields
+    |> setTitleField title
+    |> asNewArticleFieldsIn model
+
+setNewArticleContent : String -> Model -> Model
+setNewArticleContent content ({ newArticleFields } as model) =
+  newArticleFields
+    |> setContentField content
+    |> asNewArticleFieldsIn model
+
+toggleNewArticleFocus : Model -> Model
+toggleNewArticleFocus ({ newArticleFields } as model) =
+  newArticleFields
+    |> toggleFocus
+    |> asNewArticleFieldsIn model
+
+toggleNewArticlePreview : Model -> Model
+toggleNewArticlePreview ({ newArticleFields } as model) =
+  newArticleFields
+    |> togglePreview
+    |> asNewArticleFieldsIn model
 
 getArticleById : String -> Model -> Maybe Article
 getArticleById id { articles } =

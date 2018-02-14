@@ -6,7 +6,7 @@ import Html.Events
 
 import Types exposing (..)
 
-view : Model -> Html Msg
+view : Model -> Html LoginAction
 view { loginFields } =
   Html.div
     [ Html.Attributes.class "contact" ]
@@ -16,18 +16,18 @@ view { loginFields } =
     , loginForm loginFields
     ]
 
-loginForm : LoginFields -> Html Msg
+loginForm : LoginFields -> Html LoginAction
 loginForm { email, password } =
   Html.form
     [ Html.Attributes.class "contact--form"
-    , Html.Events.onSubmit <| LoginForm LoginUser
+    , Html.Events.onSubmit LoginUser
     ]
     [ emailInput email
     , passwordInput password
     , submitButton
     ]
 
-emailInput : String -> Html Msg
+emailInput : String -> Html LoginAction
 emailInput email =
   Html.label
     [ Html.Attributes.class "contact--form-email" ]
@@ -39,12 +39,12 @@ emailInput email =
       , Html.Attributes.required True
       , Html.Attributes.placeholder "email@example.com"
       , Html.Attributes.value email
-      , Html.Events.onInput (LoginForm << LoginEmailInput)
+      , Html.Events.onInput LoginEmailInput
       ]
       []
     ]
 
-passwordInput : String -> Html Msg
+passwordInput : String -> Html LoginAction
 passwordInput password =
   Html.label
     [ Html.Attributes.class "contact--form-content" ]
@@ -55,12 +55,12 @@ passwordInput password =
       , Html.Attributes.autocomplete False
       , Html.Attributes.required True
       , Html.Attributes.value password
-      , Html.Events.onInput (LoginForm << LoginPasswordInput)
+      , Html.Events.onInput LoginPasswordInput
       ]
       []
     ]
 
-submitButton : Html Msg
+submitButton : Html LoginAction
 submitButton =
   Html.input
     [ Html.Attributes.class "contact--form-submit"

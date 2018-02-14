@@ -17,3 +17,12 @@ isId id { uuid } =
 toUnifiedArticle : (String, Article) -> Article
 toUnifiedArticle (uuid, article) =
   { article | uuid = uuid }
+
+toSubmit : String -> String -> Date -> Article
+toSubmit title content date =
+  { uuid = ""
+  , title = title
+  , content = content
+  , tags = []
+  , date = date
+  }

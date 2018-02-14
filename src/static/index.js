@@ -11,7 +11,7 @@ const program = Elm.Main.embed(document.getElementById('main'))
 program.ports.requestPosts.subscribe(function(userName) {
   console.log("Request posts!")
   Post.list(userName).then(function(posts) {
-    program.ports.getPosts.send(posts.val())
+    program.ports.requestedPosts.send(posts.val())
   })
 })
 
@@ -27,7 +27,9 @@ program.ports.createPost.subscribe(function(userNameAndPost) {
 
 // Authentication part.
 program.ports.signInUser.subscribe(function(mailAndPassword) {
-  firebase.auth().signInWithEmailAndPassword(mailAndPassword[0], mailAndPassword[1]).catch(function(error) {
+  firebase.auth()
+          .signInWithEmailAndPassword(mailAndPassword[0], mailAndPassword[1])
+          .catch(function(error) {
     console.log(error.code)
     console.log(error.message)
   })

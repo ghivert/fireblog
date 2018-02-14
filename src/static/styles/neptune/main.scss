@@ -176,6 +176,56 @@
   }
 }
 
+.dashboard {
+  display: flex;
+  flex-direction: row;
+
+  &-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    input, textarea {
+      margin-top: $medium-spacing;
+      margin-bottom: $large-spacing;
+      padding: $medium-spacing;
+      color: $dark-grey;
+      border-radius: 7px;
+      outline: none;
+
+      &:focus {
+        border: 1px solid black;
+      }
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .dashboard--button-row {
+      display: flex;
+
+      button {
+        padding: $small-spacing 0;
+        font-family: $lato;
+        background-color: white;
+        color: $light-blue;
+        border: none;
+        font-weight: 700;
+        border-radius: 30px;
+        border: 2px solid $light-blue;
+        margin: 0 $medium-spacing;
+        outline: none;
+        &:hover {
+          color: white;
+          background-color: $light-blue;
+        }
+      }
+    }
+  }
+}
+
 .not-found {
   text-align: center;
   padding: $xxlarge-spacing 0;
@@ -233,22 +283,22 @@
 
 // iPhone 5S & SE | 4' screen
 @media (min-width : 320px) and (max-width : 568px) {
-  .navbar-menu {
-    // display: none;
+  .dashboard {
+    flex-direction: column;
   }
 }
 
 // iPhone 6 | 4.7' screen
 @media (min-width : 375px) and (max-width : 667px) {
-  .navbar-menu {
-    // display: none;
+  .dashboard {
+    flex-direction: column;
   }
 }
 
 // iPhone 6 plus | 5.5' screen
 @media (min-width : 414px) and (max-width : 736px) {
-  .navbar-menu {
-    // display: none;
+  .dashboard {
+    flex-direction: column;
   }
 }
 

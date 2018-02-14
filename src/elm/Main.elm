@@ -16,7 +16,6 @@ import Types exposing (..)
 import Article
 import Article.Decoder
 import Article.Encoder
-import Seeds.Articles
 import User.Decoder
 import Routing
 import View.Home
@@ -69,6 +68,12 @@ init location =
     { email = ""
     , password = ""
     }
+  , newArticleFields =
+    { title = ""
+    , content = ""
+    , focused = False
+    , previewed = False
+    }
   , user = Nothing
   , date = Nothing
   } ! [ getActualTime, Firebase.requestPosts "myself" ]
@@ -99,6 +104,8 @@ update msg ({ menuOpen, date } as model) =
       handleContactForm action model
     LoginForm action ->
       handleLoginForm action model
+    NewArticleForm action ->
+      handleNewArticleForm action model
     GetPosts posts ->
       posts
         |> Decode.decodeValue Article.Decoder.decodePosts
@@ -115,17 +122,6 @@ update msg ({ menuOpen, date } as model) =
     AcceptPost accepted ->
       let debug = Debug.log "accepted" accepted in
       model ! []
-    SubmitArticles ->
-      case date of
-        Nothing ->
-          model ! []
-        Just date ->
-          date
-            |> Seeds.Articles.samples
-            |> List.map Article.Encoder.encodeArticle
-            |> List.map ((,) "myself")
-            |> List.map Firebase.createPost
-            |> (!) model
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
 handleNavigation navigation model =
@@ -188,6 +184,38 @@ handleLoginForm loginAction ({ loginFields, user } as model) =
         |> setPasswordLogin password
         |> Update.identity
 
+handleNewArticleForm : NewArticleAction -> Model -> (Model, Cmd Msg)
+handleNewArticleForm newArticleAction ({ newArticleFields, date } as model) =
+  case newArticleAction of
+    NewArticleTitle title ->
+      model
+        |> setNewArticleTitle title
+        |> Update.identity
+    NewArticleContent content ->
+      model
+        |> setNewArticleContent content
+        |> Update.identity
+    NewArticleSubmit ->
+      case date of
+        Nothing ->
+          model ! []
+        Just date ->
+          date
+            |> Article.toSubmit newArticleFields.title newArticleFields.content
+            |> Article.Encoder.encodeArticle
+            |> (,) "myself"
+            |> Firebase.createPost
+            |> List.singleton
+            |> (!) model
+    NewArticleToggler ->
+      model
+        |> toggleNewArticleFocus
+        |> Update.identity
+    NewArticlePreview ->
+      model
+        |> toggleNewArticlePreview
+        |> Update.identity
+
 redirectIfLogin : Model -> (Model, Cmd Msg)
 redirectIfLogin ({ user, route } as model) =
   model ! [ selectRedirectPath model ]
@@ -223,7 +251,7 @@ view model =
     ]
 
 customView : Model -> Html Msg
-customView ({ route } as model) =
+customView ({ route, user } as model) =
   case route of
     Home ->
       View.Home.view model
@@ -239,10 +267,14 @@ customView ({ route } as model) =
     Archives ->
       View.Archives.view model
     Contact ->
-      View.Contact.view model
+      Html.map ContactForm <| View.Contact.view model
     Dashboard ->
-      View.Dashboard.view model
+      case user of
+        Nothing ->
+          View.Static.NotFound.view model
+        Just user ->
+          View.Dashboard.view model
     Login ->
-      View.Login.view model
+      Html.map LoginForm <| View.Login.view model
     NotFound ->
       View.Static.NotFound.view model

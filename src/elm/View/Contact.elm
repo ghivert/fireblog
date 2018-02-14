@@ -6,7 +6,7 @@ import Html.Events
 
 import Types exposing (..)
 
-view : Model -> Html Msg
+view : Model -> Html ContactAction
 view { contactFields } =
   Html.div
     [ Html.Attributes.class "contact" ]
@@ -20,18 +20,18 @@ view { contactFields } =
     , contactForm contactFields
     ]
 
-contactForm : ContactFields -> Html Msg
+contactForm : ContactFields -> Html ContactAction
 contactForm { email, message }=
   Html.form
     [ Html.Attributes.class "contact--form"
-    , Html.Events.onSubmit <| ContactForm SendContactMail
+    , Html.Events.onSubmit SendContactMail
     ]
     [ emailInput email
     , messageInput message
     , submitButton
     ]
 
-emailInput : String -> Html Msg
+emailInput : String -> Html ContactAction
 emailInput email =
   Html.label
     [ Html.Attributes.class "contact--form-email" ]
@@ -44,12 +44,12 @@ emailInput email =
       , Html.Attributes.required True
       , Html.Attributes.placeholder "email@exemple.com"
       , Html.Attributes.value email
-      , Html.Events.onInput (ContactForm << ContactEmailInput)
+      , Html.Events.onInput ContactEmailInput
       ]
       []
     ]
 
-messageInput : String -> Html Msg
+messageInput : String -> Html ContactAction
 messageInput message =
   Html.label
     [ Html.Attributes.class "contact--form-content" ]
@@ -60,12 +60,12 @@ messageInput message =
       , Html.Attributes.autocomplete False
       , Html.Attributes.required True
       , Html.Attributes.value message
-      , Html.Events.onInput (ContactForm << ContactMessageInput)
+      , Html.Events.onInput ContactMessageInput
       ]
       []
     ]
 
-submitButton : Html Msg
+submitButton : Html ContactAction
 submitButton =
   Html.input
     [ Html.Attributes.class "contact--form-submit"
