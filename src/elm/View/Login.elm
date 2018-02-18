@@ -12,7 +12,7 @@ view { loginFields } =
     [ Html.Attributes.class "contact" ]
     [ Html.h1
       [ Html.Attributes.class "contact--title" ]
-      [ Html.text "Log-In" ]
+      [ Html.text "S'identifier" ]
     , loginForm loginFields
     ]
 
@@ -31,13 +31,12 @@ emailInput : String -> Html LoginAction
 emailInput email =
   Html.label
     [ Html.Attributes.class "contact--form-email" ]
-    [ Html.span [] [ Html.text "E-mail:" ]
+    [ Html.span [] [ Html.text "E-mail :" ]
     , Html.input
       [ Html.Attributes.type_ "email"
-      , Html.Attributes.name "email"
       , Html.Attributes.autocomplete True
       , Html.Attributes.required True
-      , Html.Attributes.placeholder "email@example.com"
+      , Html.Attributes.placeholder "email@exemple.com"
       , Html.Attributes.value email
       , Html.Events.onInput LoginEmailInput
       ]
@@ -48,10 +47,9 @@ passwordInput : String -> Html LoginAction
 passwordInput password =
   Html.label
     [ Html.Attributes.class "contact--form-content" ]
-    [ Html.span [] [ Html.text "Password:" ]
+    [ Html.span [] [ Html.text "Mot de passe :" ]
     , Html.input
       [ Html.Attributes.type_ "password"
-      , Html.Attributes.name "password"
       , Html.Attributes.autocomplete False
       , Html.Attributes.required True
       , Html.Attributes.value password
@@ -65,6 +63,6 @@ submitButton =
   Html.input
     [ Html.Attributes.class "contact--form-submit"
     , Html.Attributes.type_ "submit"
-    , Html.Attributes.value "Submit"
+    , Html.Attributes.value "Envoyer"
     ]
-    [ Html.text "Submit" ]
+    [ Html.text "Envoyer" ]

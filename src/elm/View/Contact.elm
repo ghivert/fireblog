@@ -70,6 +70,6 @@ submitButton =
   Html.input
     [ Html.Attributes.class "contact--form-submit"
     , Html.Attributes.type_ "submit"
-    , Html.Attributes.value "Submit"
+    , Html.Attributes.value "Envoyer"
     ]
     [ Html.text "Envoyer" ]
