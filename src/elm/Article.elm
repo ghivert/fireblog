@@ -12,7 +12,7 @@ type alias Article =
 
 isId : String -> Article -> Bool
 isId id { uuid } =
-  uuid == id || "-" ++ uuid == id
+  uuid == id || uuid == "-" ++ id
 
 toUnifiedArticle : (String, Article) -> Article
 toUnifiedArticle (uuid, article) =

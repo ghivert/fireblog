@@ -3,6 +3,7 @@ module Html.Extra exposing (..)
 {-| Provides some helpers for the Html module, not included by default, but
 necessary. Contains both structure and attributes/events. -}
 
+import Char
 import Html exposing (Html)
 import Html.Events
 import Json.Decode
@@ -26,7 +27,14 @@ onPreventClick message =
 dash and lower every character. -}
 correctUrlString : String -> String
 correctUrlString =
-  String.toLower >> String.split " " >> String.join "-"
+  String.toLower
+    >> String.split " "
+    >> List.map (String.filter acceptedUrlChars)
+    >> String.join "-"
+
+acceptedUrlChars : Char -> Bool
+acceptedUrlChars char =
+  Char.isDigit char || Char.isLower char
 
 {-| Get UUID part of an article URL. An article URL always takes shape
 `domain-name.com/article-title-uuid` where uuid correspond to the UUID of the

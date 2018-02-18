@@ -68,12 +68,7 @@ init location =
     { email = ""
     , password = ""
     }
-  , newArticleFields =
-    { title = ""
-    , content = ""
-    , focused = False
-    , previewed = False
-    }
+  , newArticleWriting = NewArticle defaultNewArticleFields
   , user = Nothing
   , date = Nothing
   } ! [ getActualTime, Firebase.requestPosts "myself" ]
@@ -185,7 +180,7 @@ handleLoginForm loginAction ({ loginFields, user } as model) =
         |> Update.identity
 
 handleNewArticleForm : NewArticleAction -> Model -> (Model, Cmd Msg)
-handleNewArticleForm newArticleAction ({ newArticleFields, date } as model) =
+handleNewArticleForm newArticleAction ({ newArticleWriting, date } as model) =
   case newArticleAction of
     NewArticleTitle title ->
       model
@@ -196,17 +191,22 @@ handleNewArticleForm newArticleAction ({ newArticleFields, date } as model) =
         |> setNewArticleContent content
         |> Update.identity
     NewArticleSubmit ->
-      case date of
-        Nothing ->
+      case newArticleWriting of
+        NewArticle { title, content } ->
+          case date of
+            Nothing ->
+              model ! []
+            Just date ->
+              date
+                |> Article.toSubmit title content
+                |> Article.Encoder.encodeArticle
+                |> (,) "myself"
+                |> Firebase.createPost
+                |> List.singleton
+                |> (!) model
+                :> handleNewArticleForm NewArticleRemove
+        SentArticle ->
           model ! []
-        Just date ->
-          date
-            |> Article.toSubmit newArticleFields.title newArticleFields.content
-            |> Article.Encoder.encodeArticle
-            |> (,) "myself"
-            |> Firebase.createPost
-            |> List.singleton
-            |> (!) model
     NewArticleToggler ->
       model
         |> toggleNewArticleFocus
@@ -215,6 +215,10 @@ handleNewArticleForm newArticleAction ({ newArticleFields, date } as model) =
       model
         |> toggleNewArticlePreview
         |> Update.identity
+    NewArticleRemove ->
+      { model | newArticleWriting = SentArticle } ! []
+    NewArticleWrite ->
+      { model | newArticleWriting = NewArticle defaultNewArticleFields } ! []
 
 redirectIfLogin : Model -> (Model, Cmd Msg)
 redirectIfLogin ({ user, route } as model) =

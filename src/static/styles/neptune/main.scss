@@ -203,33 +203,37 @@
       resize: vertical;
     }
 
-    .dashboard--button-row {
-      display: flex;
+    &.sent {
+      text-align: center;
+    }
 
-      button {
-        padding: $small-spacing 0;
-        font-family: $lato;
-        background-color: white;
-        color: $light-blue;
-        border: none;
-        font-weight: 700;
-        border-radius: 30px;
-        border: 2px solid $light-blue;
-        margin: 0 $medium-spacing;
-        outline: none;
+    button {
+      padding: $small-spacing 0;
+      font-family: $lato;
+      background-color: white;
+      color: $light-blue;
+      border: none;
+      font-weight: 700;
+      border-radius: 30px;
+      border: 2px solid $light-blue;
+      margin: 0 $medium-spacing;
+      outline: none;
+      &:hover {
+        color: white;
+        background-color: $light-blue;
+      }
+      &[disabled] {
+        color: $light-grey;
+        border-color: $light-grey;
         &:hover {
-          color: white;
-          background-color: $light-blue;
-        }
-        &[disabled] {
+          background-color: white;
           color: $light-grey;
-          border-color: $light-grey;
-          &:hover {
-            background-color: white;
-            color: $light-grey;
-          }
         }
       }
+    }
+
+    .dashboard--button-row {
+      display: flex;
     }
   }
 }

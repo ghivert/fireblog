@@ -8,25 +8,42 @@ import Markdown
 import Types exposing (..)
 
 view : Model -> Html Msg
-view { newArticleFields } =
+view { newArticleWriting } =
   Html.map NewArticleForm <|
-    Html.div
-      [ Html.Attributes.class "dashboard"
-      , Html.Attributes.style <|
-        if newArticleFields.focused then
-          [ ("flex-direction", "column") ]
-        else
-          []
-      ]
-      [ Html.div
-        [ Html.Attributes.class "dashboard-left" ] <|
-        if newArticleFields.previewed then
-          newArticlePreview newArticleFields
-        else
-          newArticleEdition newArticleFields
-      , Html.div
-        [ Html.Attributes.class "dashboard-right" ] []
-      ]
+    case newArticleWriting of
+      NewArticle ({ focused, previewed } as fields) ->
+        viewInternal Nothing
+          (if focused then
+            [ ("flex-direction", "column") ]
+          else
+            [])
+          (if previewed then
+              newArticlePreview fields
+            else
+              newArticleEdition fields)
+      SentArticle ->
+        viewInternal (Just "sent") []
+          [ Html.h1 [] [ Html.text "Article envoyé !" ]
+          , Html.button
+            [ Html.Attributes.value "Envoyer un autre article ?"
+            , Html.Events.onClick NewArticleWrite
+            ]
+            [ Html.text "Envoyer un autre article ?" ]
+          ]
+
+viewInternal : Maybe String -> List (String, String) -> List (Html NewArticleAction) -> Html NewArticleAction
+viewInternal extraClass style content =
+  Html.div
+    [ Html.Attributes.class "dashboard"
+    , Html.Attributes.style style
+    ]
+    [ Html.div
+      [ Html.Attributes.class <| "dashboard-left" ++ (Maybe.withDefault "" extraClass) ]
+      content
+    , Html.div
+      [ Html.Attributes.class "dashboard-right" ] []
+    ]
+
 
 newArticlePreview : NewArticleFields -> List (Html NewArticleAction)
 newArticlePreview ({ title, content } as newArticleFields) =
@@ -39,7 +56,7 @@ newArticlePreview ({ title, content } as newArticleFields) =
     , Html.Attributes.style
       [ ("align-self", "flex-start") ]
     ] []
-  , Markdown.toHtml [] content
+  , Markdown.toHtml [ Html.Attributes.class "markdown--content" ] content
   , buttonRow newArticleFields
   ]
 
@@ -77,18 +94,33 @@ buttonRow { title, content, previewed } =
   in
   Html.div
     [ Html.Attributes.class "dashboard--button-row" ]
-    [ Html.button
-      [ Html.Attributes.value "Envoyer"
-      , Html.Attributes.style [ ("flex", "0.5") ]
-      , Html.Attributes.disabled activatedButton
-      , Html.Events.onClick NewArticleSubmit
-      ]
-      [ Html.text "Envoyer" ]
-    , Html.button
-      [ Html.Attributes.value previewButtonText
-      , Html.Attributes.style [ ("flex", "1") ]
-      , Html.Events.onClick NewArticlePreview
-      , Html.Attributes.disabled activatedButton
-      ]
-      [ Html.text previewButtonText ]
+    [ genericButton
+      { value = "Envoyer"
+      , flex = 0.5
+      , disabled = activatedButton
+      , onClick = NewArticleSubmit
+      }
+    , genericButton
+      { value = previewButtonText
+      , flex = 1.0
+      , disabled = activatedButton
+      , onClick = NewArticlePreview
+      }
     ]
+
+type alias GenericButtonValue msg =
+  { value : String
+  , flex : Float
+  , disabled : Bool
+  , onClick : msg
+  }
+
+genericButton : GenericButtonValue msg -> Html msg
+genericButton { value, flex, disabled, onClick } =
+  Html.button
+    [ Html.Attributes.value value
+    , Html.Attributes.style [ ("flex", (toString flex)) ]
+    , Html.Attributes.disabled disabled
+    , Html.Events.onClick onClick
+    ]
+    [ Html.text value ]

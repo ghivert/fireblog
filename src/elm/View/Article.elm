@@ -6,6 +6,7 @@ import Html.Extra
 import Date exposing (Date)
 import Date.Extra.Format
 import Date.Extra.Config.Config_fr_fr
+import Markdown
 
 import Article exposing (Article)
 import Types exposing (..)
@@ -19,10 +20,15 @@ view { title, content, tags, date } =
       [ Html.h1
         [ Html.Attributes.class "article--title" ]
         [ Html.text title ]
-      , articleDateView date
+      , Html.img
+        [ Html.Attributes.src "/static/img/neptune/separator.png"
+        , Html.Attributes.style
+          [ ("align-self", "flex-start") ]
+        ] []
       , Html.p
-        [ Html.Attributes.class "article--content" ]
-        [ Html.text content ]
+          [ Html.Attributes.class "article--content" ]
+          [ Markdown.toHtml [ Html.Attributes.class "markdown--content" ] content ]
+      , articleDateView date
       -- , Html.div
       --   [ Html.Attributes.class "article--tags" ]
       --   [ tagsLink tags ]
@@ -36,9 +42,14 @@ preview ({ title, content, uuid, tags, date } as article) =
     [ Html.h1
       [ Html.Attributes.class "article--title" ]
       [ articleLink article ]
+    , Html.img
+      [ Html.Attributes.src "/static/img/neptune/separator.png"
+      , Html.Attributes.style
+        [ ("align-self", "flex-start") ]
+      ] []
     , Html.p
       [ Html.Attributes.class "article--content" ]
-      [ Html.text <| shorten content ]
+      [ Markdown.toHtml [ Html.Attributes.class "markdown--content" ] <| shorten content ]
     , articleDateView date
     -- , Html.div
     --   [ Html.Attributes.class "article--tags" ]

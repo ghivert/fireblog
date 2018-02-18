@@ -46,6 +46,8 @@ type NewArticleAction
   | NewArticleSubmit
   | NewArticleToggler
   | NewArticlePreview
+  | NewArticleRemove
+  | NewArticleWrite
 
 type Msg
   = Navigation SpaNavigation
@@ -81,11 +83,31 @@ setPasswordField : String -> LoginFields -> LoginFields
 setPasswordField password fields =
   { fields | password = password }
 
+type NewArticleWriting
+  = NewArticle NewArticleFields
+  | SentArticle
+
+newArticleWritingMap : (NewArticleFields -> NewArticleFields) -> NewArticleWriting -> NewArticleWriting
+newArticleWritingMap mapper writing =
+  case writing of
+    NewArticle fields ->
+      NewArticle (mapper fields)
+    SentArticle ->
+      SentArticle
+
 type alias NewArticleFields =
   { title : String
   , content : String
   , focused : Bool
   , previewed : Bool
+  }
+
+defaultNewArticleFields : NewArticleFields
+defaultNewArticleFields =
+  { title = ""
+  , content = ""
+  , focused = False
+  , previewed = False
   }
 
 setTitleField : String -> NewArticleFields -> NewArticleFields
@@ -113,7 +135,7 @@ type alias Model =
   , date : Maybe Date
   , contactFields : ContactFields
   , loginFields : LoginFields
-  , newArticleFields : NewArticleFields
+  , newArticleWriting : NewArticleWriting
   }
 
 setLocation : Location -> Model -> Model
@@ -140,9 +162,9 @@ asLoginFieldsIn : Model -> LoginFields -> Model
 asLoginFieldsIn model loginFields =
   { model | loginFields = loginFields }
 
-asNewArticleFieldsIn : Model -> NewArticleFields -> Model
-asNewArticleFieldsIn model newArticleFields =
-  { model | newArticleFields = newArticleFields }
+asNewArticleFieldsIn : Model -> NewArticleWriting -> Model
+asNewArticleFieldsIn model newArticleWriting =
+  { model | newArticleWriting = newArticleWriting }
 
 setArticles : List Article -> Model -> Model
 setArticles =
@@ -193,27 +215,27 @@ setPasswordLogin password ({ loginFields } as model) =
     |> asLoginFieldsIn model
 
 setNewArticleTitle : String -> Model -> Model
-setNewArticleTitle title ({ newArticleFields } as model) =
-  newArticleFields
-    |> setTitleField title
+setNewArticleTitle title ({ newArticleWriting } as model) =
+  newArticleWriting
+    |> newArticleWritingMap (setTitleField title)
     |> asNewArticleFieldsIn model
 
 setNewArticleContent : String -> Model -> Model
-setNewArticleContent content ({ newArticleFields } as model) =
-  newArticleFields
-    |> setContentField content
+setNewArticleContent content ({ newArticleWriting } as model) =
+  newArticleWriting
+    |> newArticleWritingMap (setContentField content)
     |> asNewArticleFieldsIn model
 
 toggleNewArticleFocus : Model -> Model
-toggleNewArticleFocus ({ newArticleFields } as model) =
-  newArticleFields
-    |> toggleFocus
+toggleNewArticleFocus ({ newArticleWriting } as model) =
+  newArticleWriting
+    |> newArticleWritingMap toggleFocus
     |> asNewArticleFieldsIn model
 
 toggleNewArticlePreview : Model -> Model
-toggleNewArticlePreview ({ newArticleFields } as model) =
-  newArticleFields
-    |> togglePreview
+toggleNewArticlePreview ({ newArticleWriting } as model) =
+  newArticleWriting
+    |> newArticleWritingMap togglePreview
     |> asNewArticleFieldsIn model
 
 getArticleById : String -> Model -> Maybe Article

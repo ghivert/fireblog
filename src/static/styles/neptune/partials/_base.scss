@@ -24,3 +24,13 @@ input, textarea {
   width: 100%;
   border: 1px solid $xlight-grey;
 }
+
+img {
+  max-width: 100%;
+}
+
+.markdown--content {
+  img {
+    border-radius: 5px;
+  }
+}
