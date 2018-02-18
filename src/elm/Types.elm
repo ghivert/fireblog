@@ -5,6 +5,7 @@ import List.Extra as List
 import Navigation exposing (Location)
 import Window exposing (Size)
 import Date exposing (Date)
+import Html.Extra
 
 import Article exposing (Article)
 import User exposing (User)
@@ -60,6 +61,7 @@ type Msg
   | GetPosts Json.Decode.Value
   | GetUser Json.Decode.Value
   | AcceptPost Bool
+  | RequestPosts String
 
 type alias ContactFields =
   { email : String
@@ -240,4 +242,7 @@ toggleNewArticlePreview ({ newArticleWriting } as model) =
 
 getArticleById : String -> Model -> Maybe Article
 getArticleById id { articles } =
-  List.find (Article.isId id) articles
+  id
+    |> Html.Extra.replaceUnderscore
+    |> Article.isId
+    |> flip List.find articles

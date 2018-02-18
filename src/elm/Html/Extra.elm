@@ -25,16 +25,25 @@ onPreventClick message =
 
 {-| Filter a string to ensure legit characters in URL. Replaces whitespaces with
 dash and lower every character. -}
-correctUrlString : String -> String
-correctUrlString =
+createUrl : String -> String
+createUrl =
   String.toLower
     >> String.split " "
     >> List.map (String.filter acceptedUrlChars)
+    >> List.map replaceHyphen
     >> String.join "-"
 
 acceptedUrlChars : Char -> Bool
 acceptedUrlChars char =
   Char.isDigit char || Char.isLower char
+
+replaceHyphen : String -> String
+replaceHyphen =
+  String.map <| \char -> if char == '-' then '_' else char
+
+replaceUnderscore : String -> String
+replaceUnderscore =
+  String.map <| \char -> if char == '_' then '-' else char
 
 {-| Get UUID part of an article URL. An article URL always takes shape
 `domain-name.com/article-title-uuid` where uuid correspond to the UUID of the

@@ -70,7 +70,7 @@ articleLink ({ title } as article) =
 
 articleUrl : Article -> String
 articleUrl { title, uuid } =
-  "/article/" ++ Html.Extra.correctUrlString title ++ "-" ++ uuid
+  "/article/" ++ Html.Extra.createUrl title ++ "-" ++ Html.Extra.replaceHyphen uuid
 
 archivesLink : Article -> Html Msg
 archivesLink ({ date } as article) =

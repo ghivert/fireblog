@@ -1,9 +1,12 @@
 import 'normalize-css'
+import hljs from 'highlight.js'
 import './styles/main.scss'
 import Post from '../js/post'
 import Elm from '../elm/Main'
 import '../js/config'
 
+window.hljs = hljs
+hljs.initHighlightingOnLoad()
 // Inject bundled Elm app into div#main.
 const program = Elm.Main.embed(document.getElementById('main'))
 

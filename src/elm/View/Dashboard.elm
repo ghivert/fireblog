@@ -38,7 +38,9 @@ viewInternal extraClass style content =
     , Html.Attributes.style style
     ]
     [ Html.div
-      [ Html.Attributes.class <| "dashboard-left" ++ (Maybe.withDefault "" extraClass) ]
+      [ Html.Attributes.class <|
+        "dashboard-left" ++ (Maybe.withDefault "" <| Maybe.map ((++) " ") extraClass)
+      ]
       content
     , Html.div
       [ Html.Attributes.class "dashboard-right" ] []

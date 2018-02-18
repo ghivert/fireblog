@@ -4,6 +4,7 @@
 
 // Partials in SCSS
 @import 'partials/base';
+@import 'partials/markdown';
 // Navbar
 .navbar {
   display: flex;
@@ -18,6 +19,7 @@
 
     &--link {
       color: black;
+      transition: all 0.2s;
     }
   }
 
@@ -234,6 +236,7 @@
 
     .dashboard--button-row {
       display: flex;
+      padding: $medium-spacing 0;
     }
   }
 }
@@ -262,7 +265,7 @@
   &--metadata {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
 
     .archives-article {
       font-family: $lato;

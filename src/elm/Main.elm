@@ -30,6 +30,10 @@ import View.Static.NotFound
 import View.Static.About
 import Firebase
 
+myself : String
+myself =
+  "myself"
+
 main : Program Never Model Msg
 main =
   Navigation.program (Navigation << NewLocation)
@@ -71,7 +75,9 @@ init location =
   , newArticleWriting = NewArticle defaultNewArticleFields
   , user = Nothing
   , date = Nothing
-  } ! [ getActualTime, Firebase.requestPosts "myself" ]
+  }
+    ! [ getActualTime ]
+    :> update (RequestPosts myself)
 
 getActualTime : Cmd Msg
 getActualTime =
@@ -117,6 +123,8 @@ update msg ({ menuOpen, date } as model) =
     AcceptPost accepted ->
       let debug = Debug.log "accepted" accepted in
       model ! []
+    RequestPosts username ->
+      model ! [ Firebase.requestPosts username ]
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
 handleNavigation navigation model =
@@ -200,11 +208,12 @@ handleNewArticleForm newArticleAction ({ newArticleWriting, date } as model) =
               date
                 |> Article.toSubmit title content
                 |> Article.Encoder.encodeArticle
-                |> (,) "myself"
+                |> (,) myself
                 |> Firebase.createPost
                 |> List.singleton
                 |> (!) model
                 :> handleNewArticleForm NewArticleRemove
+                :> update (RequestPosts myself)
         SentArticle ->
           model ! []
     NewArticleToggler ->
@@ -273,10 +282,10 @@ customView ({ route, user } as model) =
     Contact ->
       Html.map ContactForm <| View.Contact.view model
     Dashboard ->
-      -- case user of
-        -- Nothing ->
-          -- View.Static.NotFound.view model
-        -- Just user ->
+      case user of
+        Nothing ->
+          View.Static.NotFound.view model
+        Just user ->
           View.Dashboard.view model
     Login ->
       Html.map LoginForm <| View.Login.view model
