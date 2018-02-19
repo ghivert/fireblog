@@ -98,8 +98,8 @@ dateView : String -> Date -> Html Msg
 dateView class date =
   Html.div
     [ Html.Attributes.class class ]
-    [ Html.text <|
-      Date.Extra.Format.format
+    [ Html.text
+      <| Date.Extra.Format.format
         Date.Extra.Config.Config_fr_fr.config
         frenchDateFormat
         date

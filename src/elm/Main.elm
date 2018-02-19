@@ -254,8 +254,7 @@ view model =
       [ Html.img
         [ Html.Attributes.class "banner-photo"
         , Html.Attributes.src "/static/img/banner-photo.jpg"
-        ]
-        []
+        ] []
       , Html.div
         [ Html.Attributes.class "container" ]
         [ customView model ]

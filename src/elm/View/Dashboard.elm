@@ -11,16 +11,10 @@ view : Model -> Html Msg
 view { newArticleWriting } =
   Html.map NewArticleForm <|
     case newArticleWriting of
-      NewArticle ({ focused, previewed } as fields) ->
+      NewArticle ({ focused } as fields) ->
         viewInternal Nothing
-          (if focused then
-            [ ("flex-direction", "column") ]
-          else
-            [])
-          (if previewed then
-              newArticlePreview fields
-            else
-              newArticleEdition fields)
+          (columnIfFocused focused)
+          (newArticleEdit fields)
       SentArticle ->
         viewInternal (Just "sent") []
           [ Html.h1 [] [ Html.text "Article envoyé !" ]
@@ -31,6 +25,20 @@ view { newArticleWriting } =
             [ Html.text "Envoyer un autre article ?" ]
           ]
 
+columnIfFocused : Bool -> List (String, String)
+columnIfFocused focused =
+  if focused then
+    [ ("flex-direction", "column") ]
+  else
+    []
+
+newArticleEdit : NewArticleFields -> List (Html NewArticleAction)
+newArticleEdit ({ previewed } as fields) =
+  if previewed then
+    newArticlePreview fields
+  else
+    newArticleEdition fields
+
 viewInternal : Maybe String -> List (String, String) -> List (Html NewArticleAction) -> Html NewArticleAction
 viewInternal extraClass style content =
   Html.div
@@ -38,8 +46,11 @@ viewInternal extraClass style content =
     , Html.Attributes.style style
     ]
     [ Html.div
-      [ Html.Attributes.class <|
-        "dashboard-left" ++ (Maybe.withDefault "" <| Maybe.map ((++) " ") extraClass)
+      [ Html.Attributes.class
+        <| (++) "dashboard-left"
+        <| Maybe.withDefault ""
+        <| Maybe.map ((++) " ")
+        <| extraClass
       ]
       content
     , Html.div
@@ -80,11 +91,8 @@ newArticleEdition ({ title, content, focused } as newArticleFields) =
     , Html.Events.onInput NewArticleContent
     , Html.Events.onFocus NewArticleToggler
     , Html.Events.onBlur NewArticleToggler
-    , Html.Attributes.style <|
-      if focused then
-        [ ("min-height", "200px") ]
-      else
-        []
+    , Html.Attributes.style
+      <| if focused then [ ("min-height", "200px") ] else []
     ] []
   , buttonRow newArticleFields
   ]
