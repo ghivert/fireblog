@@ -1,11 +1,11 @@
 // Initialize Firebase. Replace the content with your initializer.
 // See README for more information.
 var config = {
-  apiKey: "AIzaSyD9RQYEug-14kHLFzeZMLf88Cn4XHeJGP8",
-  authDomain: "guillaume-blog.firebaseapp.com",
-  databaseURL: "https://guillaume-blog.firebaseio.com",
-  projectId: "guillaume-blog",
-  storageBucket: "guillaume-blog.appspot.com",
-  messagingSenderId: "850230394054"
+  apiKey: "AIzaSyCfT9k5g7G7O7ylspEwYwY-MdJzxzS9QeU",
+  authDomain: "guillaume-blog-staging.firebaseapp.com",
+  databaseURL: "https://guillaume-blog-staging.firebaseio.com",
+  projectId: "guillaume-blog-staging",
+  storageBucket: "",
+  messagingSenderId: "691123496496"
 }
 firebase.initializeApp(config)

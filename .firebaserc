@@ -1,5 +1,5 @@
 {
   "projects": {
-    "production": "guillaume-blog"
+    "staging": "guillaume-blog-staging"
   }
 }
