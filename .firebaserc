@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "guillaume-blog"
+    "production": "guillaume-blog"
   }
 }

@@ -11,3 +11,6 @@ Thumbs.db
 
 # Firebase generated files
 firebase-debug.log
+
+database.rules.json
+storage.rules
