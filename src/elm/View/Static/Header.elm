@@ -20,7 +20,7 @@ view ({ menuOpen } as model) =
           <| Navigation
           <| ChangePage "/"
         ]
-        [ Html.text "Neptune" ]
+        [ Html.text "Guillaume Hivert" ]
       ]
     , navbarMenu model
     , Html.div

@@ -17,7 +17,13 @@ view { contactFields } =
       [ Html.Attributes.class "contact--introduction" ]
       [ Html.text
         "Je serais ravi de discuter avec vous, et très content de lire ce que vous pensez de ce blog." ]
-    , contactForm contactFields
+    -- , contactForm contactFields
+    , Html.p
+      [ Html.Attributes.class "contact--mail" ]
+      [ Html.text "Parce que Google Cloud ne permet pas encore d'envoyer des mails facilement, écrivez-moi à "
+      , Html.a [ Html.Attributes.href "mailto:hivert.is.coming@gmail.com" ]
+        [ Html.text "hivert.is.coming@gmail.com" ]
+      ]
     ]
 
 contactForm : ContactFields -> Html ContactAction
