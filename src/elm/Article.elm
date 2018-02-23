@@ -1,6 +1,8 @@
 module Article exposing (..)
 
 import Date exposing (Date)
+import Html.Extra
+import List.Extra
 
 type alias Article =
   { uuid : String
@@ -26,3 +28,10 @@ toSubmit title content date =
   , tags = []
   , date = date
   }
+
+getArticleById : String -> List Article -> Maybe Article
+getArticleById id articles =
+  id
+    |> Html.Extra.replaceUnderscore
+    |> isId
+    |> flip List.Extra.find articles

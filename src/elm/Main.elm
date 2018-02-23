@@ -62,7 +62,7 @@ init : Location -> (Model, Cmd Msg)
 init location =
   { location = location
   , route = Routing.parseLocation location
-  , articles = []
+  , articles = Nothing
   , menuOpen = False
   , contactFields =
     { email = ""
@@ -263,19 +263,26 @@ view model =
     ]
 
 customView : Model -> Html Msg
-customView ({ route, user } as model) =
+customView ({ route, user, articles } as model) =
   case route of
     Home ->
       View.Home.view model
     About ->
       View.Static.About.view model
     Article id ->
-      id
-        |> Html.Extra.getUuidPart
-        |> Maybe.map (flip getArticleById model)
-        |> Maybe.join
-        |> Maybe.map View.Article.view
-        |> Maybe.withDefault (View.Static.NotFound.view model)
+      case articles of
+        Nothing ->
+          Html.img
+            [ Html.Attributes.src "/static/img/loading.gif"
+            , Html.Attributes.class "spinner"
+            ] []
+        Just articles ->
+          id
+            |> Html.Extra.getUuidPart
+            |> Maybe.map (flip Article.getArticleById articles)
+            |> Maybe.join
+            |> Maybe.map View.Article.view
+            |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
       View.Archives.view model
     Contact ->

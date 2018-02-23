@@ -5,7 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-
+var Dotenv = require('dotenv-webpack')
 
 const prod = 'production';
 const dev = 'development';
@@ -61,7 +61,8 @@ var commonConfig = {
         }),
         new webpack.ProvidePlugin({
           'firebase': 'firebase'
-        })
+        }),
+        new Dotenv()
     ]
 }
 

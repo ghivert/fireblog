@@ -9,7 +9,7 @@
     "url": "https://github.com/ghivert/personal-blog"
   },
   "scripts": {
-    "start": "webpack-dev-server --hot --inline",
+    "start": "./node_modules/.bin/webpack-dev-server --hot --inline",
     "prebuild": "rimraf dist",
     "build": "webpack",
     "reinstall": "npm i rimraf && rimraf node_modules && npm uninstall -g elm && npm i -g elm && npm i && elm package install"

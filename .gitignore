@@ -8,9 +8,11 @@ dist/
 .DS_Store
 *~
 Thumbs.db
+config.js
 
 # Firebase generated files
 firebase-debug.log
+.firebaserc
 
 database.rules.json
 storage.rules

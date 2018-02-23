@@ -3,13 +3,14 @@ module View.Static.NotFound exposing (view)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Extra
+import Maybe.Extra exposing ((?))
 
 import Types exposing (..)
 import View.Article
 
 view : Model -> Html Msg
 view { articles } =
-  let lastArticle = List.head articles in
+  let lastArticle = List.head (articles ? []) in
   Html.div
     [ Html.Attributes.class "not-found" ]
     [ Html.div

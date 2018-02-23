@@ -20,7 +20,7 @@ view { contactFields } =
     -- , contactForm contactFields
     , Html.p
       [ Html.Attributes.class "contact--mail" ]
-      [ Html.text "Parce que Google Cloud ne permet pas encore d'envoyer des mails facilement, écrivez-moi à "
+      [ Html.text "Écrivez-moi à "
       , Html.a [ Html.Attributes.href "mailto:hivert.is.coming@gmail.com" ]
         [ Html.text "hivert.is.coming@gmail.com" ]
       ]

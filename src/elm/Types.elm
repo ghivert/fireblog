@@ -1,11 +1,9 @@
 module Types exposing (..)
 
 import Json.Decode
-import List.Extra as List
 import Navigation exposing (Location)
 import Window exposing (Size)
 import Date exposing (Date)
-import Html.Extra
 
 import Article exposing (Article)
 import User exposing (User)
@@ -131,7 +129,7 @@ togglePreview ({ previewed } as fields) =
 type alias Model =
   { location : Location
   , route : Route
-  , articles : List Article
+  , articles : Maybe (List Article)
   , menuOpen : Bool
   , user : Maybe User
   , date : Maybe Date
@@ -174,7 +172,7 @@ setArticles =
 
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
-    { model | articles = articles }
+    { model | articles = Just articles }
 
 setUser : Maybe User -> Model -> Model
 setUser =
@@ -239,10 +237,3 @@ toggleNewArticlePreview ({ newArticleWriting } as model) =
   newArticleWriting
     |> newArticleWritingMap togglePreview
     |> asNewArticleFieldsIn model
-
-getArticleById : String -> Model -> Maybe Article
-getArticleById id { articles } =
-  id
-    |> Html.Extra.replaceUnderscore
-    |> Article.isId
-    |> flip List.find articles

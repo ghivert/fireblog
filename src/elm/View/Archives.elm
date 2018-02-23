@@ -11,4 +11,12 @@ view : Model -> Html Msg
 view { articles } =
   Html.div
     [ Html.Attributes.class "archives" ]
-    (List.map View.Article.archivesLink articles)
+    <| case articles of
+      Nothing ->
+        [ Html.img
+          [ Html.Attributes.src "/static/img/loading.gif"
+          , Html.Attributes.class "spinner"
+          ] []
+        ]
+      Just articles ->
+        List.map View.Article.archivesLink articles
