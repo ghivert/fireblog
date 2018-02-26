@@ -16,6 +16,10 @@ isId : String -> Article -> Bool
 isId id { uuid } =
   uuid == id
 
+isHtmlTitle : String -> Article -> Bool
+isHtmlTitle id { title } =
+  Html.Extra.createUrl title == id
+
 toUnifiedArticle : (String, Article) -> Article
 toUnifiedArticle (uuid, article) =
   { article | uuid = uuid }
@@ -29,9 +33,8 @@ toSubmit title content date =
   , date = date
   }
 
-getArticleById : String -> List Article -> Maybe Article
-getArticleById id articles =
+getArticleByHtmlTitle : String -> List Article -> Maybe Article
+getArticleByHtmlTitle id articles =
   id
-    |> Html.Extra.replaceUnderscore
-    |> isId
+    |> isHtmlTitle
     |> flip List.Extra.find articles

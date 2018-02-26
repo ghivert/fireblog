@@ -47,7 +47,8 @@ replaceUnderscore =
 
 {-| Get UUID part of an article URL. An article URL always takes shape
 `domain-name.com/article-title-uuid` where uuid correspond to the UUID of the
-article. Do not handle parameters (& and ?) yet. -}
+article. Do not handle parameters (& and ?) yet.
+Not used anymore for the moment. -}
 getUuidPart : String -> Maybe String
 getUuidPart complete =
   complete

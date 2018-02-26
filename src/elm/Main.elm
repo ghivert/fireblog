@@ -3,14 +3,12 @@ module Main exposing (..)
 import Navigation exposing (Location)
 import Html exposing (Html)
 import Html.Attributes
-import Html.Extra
 import Update.Extra as Update
 import Update.Extra.Infix exposing (..)
 import Window
 import Date exposing (Date)
 import Task
 import Json.Decode as Decode
-import Maybe.Extra as Maybe
 
 import Types exposing (..)
 import Article
@@ -278,9 +276,7 @@ customView ({ route, user, articles } as model) =
             ] []
         Just articles ->
           id
-            |> Html.Extra.getUuidPart
-            |> Maybe.map (flip Article.getArticleById articles)
-            |> Maybe.join
+            |> flip Article.getArticleByHtmlTitle articles
             |> Maybe.map View.Article.view
             |> Maybe.withDefault (View.Static.NotFound.view model)
     Archives ->
