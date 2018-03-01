@@ -55,5 +55,6 @@ blankLink url content =
   Html.a
     [ Html.Attributes.href url
     , Html.Attributes.target "_blank"
+    , Html.Attributes.rel "noopener"
     ]
     [ Html.text content ]

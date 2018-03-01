@@ -60,6 +60,7 @@ type Msg
   | GetUser Json.Decode.Value
   | AcceptPost Bool
   | RequestPosts String
+  | UpdateTitle
 
 type alias ContactFields =
   { email : String

@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Navigation exposing (Location)
 import Html exposing (Html)
@@ -11,7 +11,7 @@ import Task
 import Json.Decode as Decode
 
 import Types exposing (..)
-import Article
+import Article exposing (Article)
 import Article.Decoder
 import Article.Encoder
 import User.Decoder
@@ -27,6 +27,39 @@ import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
 import Firebase
+
+port changeTitle : String -> Cmd msg
+
+changeTitleIfArticle : Model -> Cmd msg
+changeTitleIfArticle { route, articles } =
+  case generateTitleAccordingToRoute route articles of
+    Nothing ->
+      Cmd.none
+    Just title ->
+      changeTitle title
+
+generateTitleAccordingToRoute : Route -> Maybe (List Article) -> Maybe String
+generateTitleAccordingToRoute route articles =
+  case route of
+    Home ->
+      Just "Guillaume Hivert | Blog"
+    About ->
+      Just "Guillaume Hivert | Blog | À Propos"
+    Article title ->
+      articles
+        |> Maybe.andThen (Article.getArticleByHtmlTitle title)
+        |> Maybe.map .title
+        |> Maybe.map (flip (++) " | Guillaume Hivert | Blog")
+    Archives ->
+      Just "Guillaume Hivert | Blog | Archives"
+    Contact ->
+      Just "Guillaume Hivert | Blog | Contact"
+    Dashboard ->
+      Just "Guillaume Hivert | Blog | Dashboard"
+    Login ->
+      Just "Guillaume Hivert | Blog | Connexion"
+    NotFound ->
+      Just "Guillaume Hivert | Blog | Page Introuvable"
 
 myself : String
 myself =
@@ -112,6 +145,7 @@ update msg ({ menuOpen, date } as model) =
         |> List.map Article.toUnifiedArticle
         |> setArticlesIn model
         |> Update.identity
+        :> update UpdateTitle
     GetUser user ->
       user
         |> Decode.decodeValue User.Decoder.decodeUser
@@ -123,6 +157,8 @@ update msg ({ menuOpen, date } as model) =
       model ! []
     RequestPosts username ->
       model ! [ Firebase.requestPosts username ]
+    UpdateTitle ->
+      model ! [ changeTitleIfArticle model ]
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
 handleNavigation navigation model =
@@ -132,6 +168,7 @@ handleNavigation navigation model =
         |> setLocation location
         |> setRoute (Routing.parseLocation location)
         |> Update.identity
+        :> update UpdateTitle
     ReloadHomePage ->
       model ! [ Navigation.newUrl "/" ]
     ChangePage url ->
