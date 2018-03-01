@@ -45,7 +45,6 @@ program.ports.logoutUser.subscribe(function(email) {
 })
 
 program.ports.changeTitle.subscribe(function(title) {
-  console.log(title);
   document.title = title
 })
 
