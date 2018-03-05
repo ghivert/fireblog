@@ -1,5 +1,6 @@
 import 'normalize-css'
 import hljs from 'highlight.js'
+import pako from 'pako'
 import './styles/main.scss'
 import Post from '../js/post'
 import Elm from '../elm/Main'
@@ -49,12 +50,12 @@ program.ports.changeTitle.subscribe(function(title) {
 })
 
 program.ports.localStorage.subscribe(function(articles) {
-  window.localStorage.setItem("articles", articles)
+  window.localStorage.setItem("articles", pako.deflate(articles, {to: 'string'}))
 })
 
 var articles = window.localStorage.getItem("articles")
 if (articles !== null) {
-  program.ports.fromLocalStorage.send(articles)
+  program.ports.fromLocalStorage.send(pako.inflate(articles, {to: 'string'}))
 }
 
 firebase.auth().onAuthStateChanged(function(user) {
