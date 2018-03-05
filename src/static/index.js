@@ -48,6 +48,15 @@ program.ports.changeTitle.subscribe(function(title) {
   document.title = title
 })
 
+program.ports.localStorage.subscribe(function(articles) {
+  window.localStorage.setItem("articles", articles)
+})
+
+var articles = window.localStorage.getItem("articles")
+if (articles !== null) {
+  program.ports.fromLocalStorage.send(articles)
+}
+
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     program.ports.authChanges.send(user)

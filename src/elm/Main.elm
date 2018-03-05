@@ -5,10 +5,12 @@ import Html exposing (Html)
 import Html.Attributes
 import Update.Extra as Update
 import Update.Extra.Infix exposing (..)
+import Maybe.Extra
 import Window
 import Date exposing (Date)
 import Task
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 import Types exposing (..)
 import Article exposing (Article)
@@ -27,8 +29,11 @@ import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
 import Firebase
+import LocalStorage
 
 port changeTitle : String -> Cmd msg
+port localStorage : String -> Cmd msg
+port fromLocalStorage : (String -> msg) -> Sub msg
 
 changeTitleIfArticle : Model -> Cmd msg
 changeTitleIfArticle { route, articles } =
@@ -79,6 +84,7 @@ subscriptions model =
   Sub.batch
     [ Window.resizes Resizes
     , firebaseSubscriptions model
+    , fromLocalStorage RestoreArticles
     ]
 
 firebaseSubscriptions : Model -> Sub Msg
@@ -146,6 +152,7 @@ update msg ({ menuOpen, date } as model) =
         |> setArticlesIn model
         |> Update.identity
         :> update UpdateTitle
+        :> update StoreArticles
     GetUser user ->
       user
         |> Decode.decodeValue User.Decoder.decodeUser
@@ -159,6 +166,21 @@ update msg ({ menuOpen, date } as model) =
       model ! [ Firebase.requestPosts username ]
     UpdateTitle ->
       model ! [ changeTitleIfArticle model ]
+    StoreArticles ->
+      model ! [ localStorage <| Encode.encode 0 <| LocalStorage.encodeModel model ]
+    RestoreArticles articles ->
+      articles
+        |> Decode.decodeString LocalStorage.decodeModel
+        |> Result.withDefault Nothing
+        |> setInModelIfNotThere model
+        |> Update.identity
+
+setInModelIfNotThere : Model -> Maybe (List Article) -> Model
+setInModelIfNotThere ({ articles } as model) articles_ =
+  if Maybe.Extra.isNothing articles then
+    setRawArticles articles_ model
+  else
+    model
 
 handleNavigation : SpaNavigation -> Model -> (Model, Cmd Msg)
 handleNavigation navigation model =

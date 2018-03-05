@@ -61,6 +61,8 @@ type Msg
   | AcceptPost Bool
   | RequestPosts String
   | UpdateTitle
+  | StoreArticles
+  | RestoreArticles String
 
 type alias ContactFields =
   { email : String
@@ -174,6 +176,14 @@ setArticles =
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
     { model | articles = Just articles }
+
+setRawArticles : Maybe (List Article) -> Model -> Model
+setRawArticles =
+  flip setRawArticlesIn
+
+setRawArticlesIn : Model -> Maybe (List Article) -> Model
+setRawArticlesIn model articles =
+    { model | articles = articles }
 
 setUser : Maybe User -> Model -> Model
 setUser =
