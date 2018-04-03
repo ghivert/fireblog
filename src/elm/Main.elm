@@ -195,6 +195,8 @@ update msg ({ menuOpen, date, route, articles } as model) =
                 |> EditArticle
                 |> asArticleFieldsIn model
                 |> Update.identity
+        Dashboard ->
+          handleArticleForm ArticleWrite model
         _ ->
           model ! []
 
