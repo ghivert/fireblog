@@ -20,6 +20,7 @@ import User.Decoder
 import Routing
 import View.Home
 import View.Article
+import View.Article.Edit
 import View.Archives
 import View.Contact
 import View.Login
@@ -55,6 +56,11 @@ generateTitleAccordingToRoute route articles =
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map .title
         |> Maybe.map (flip (++) " | Guillaume Hivert | Blog")
+    Edit title ->
+      articles
+        |> Maybe.andThen (Article.getArticleByHtmlTitle title)
+        |> Maybe.map .title
+        |> Maybe.map (flip (++) " | Édition | Guillaume Hivert | Blog")
     Archives ->
       Just "Guillaume Hivert | Blog | Archives"
     Contact ->
@@ -109,7 +115,7 @@ init location =
     { email = ""
     , password = ""
     }
-  , newArticleWriting = NewArticle defaultNewArticleFields
+  , articleWriting = NewArticle defaultArticleFields
   , user = Nothing
   , date = Nothing
   }
@@ -121,7 +127,7 @@ getActualTime =
   Task.perform DateNow Date.now
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({ menuOpen, date } as model) =
+update msg ({ menuOpen, date, route, articles } as model) =
   case msg of
     Navigation navigation ->
       handleNavigation navigation model
@@ -142,8 +148,8 @@ update msg ({ menuOpen, date } as model) =
       handleContactForm action model
     LoginForm action ->
       handleLoginForm action model
-    NewArticleForm action ->
-      handleNewArticleForm action model
+    ArticleForm action ->
+      handleArticleForm action model
     GetPosts posts ->
       posts
         |> Decode.decodeValue Article.Decoder.decodePosts
@@ -153,6 +159,7 @@ update msg ({ menuOpen, date } as model) =
         |> Update.identity
         :> update UpdateTitle
         :> update StoreArticles
+        :> update UpdateEditFields
     GetUser user ->
       user
         |> Decode.decodeValue User.Decoder.decodeUser
@@ -174,6 +181,29 @@ update msg ({ menuOpen, date } as model) =
         |> Result.withDefault Nothing
         |> setInModelIfNotThere model
         |> Update.identity
+    UpdateEditFields ->
+      case route of
+        Edit id ->
+          case articles of
+            Nothing ->
+              model ! []
+            Just articles ->
+              id
+                |> flip Article.getArticleByHtmlTitle articles
+                |> Maybe.map (toArticleFields id)
+                |> Maybe.withDefault defaultArticleFields
+                |> EditArticle
+                |> asArticleFieldsIn model
+                |> Update.identity
+        _ ->
+          model ! []
+
+toArticleFields : String -> Article -> ArticleFields
+toArticleFields uuid { title, content } =
+  defaultArticleFields
+    |> setUuidField uuid
+    |> setTitleField title
+    |> setContentField content
 
 setInModelIfNotThere : Model -> Maybe (List Article) -> Model
 setInModelIfNotThere ({ articles } as model) articles_ =
@@ -191,6 +221,7 @@ handleNavigation navigation model =
         |> setRoute (Routing.parseLocation location)
         |> Update.identity
         :> update UpdateTitle
+        :> update UpdateEditFields
     ReloadHomePage ->
       model ! [ Navigation.newUrl "/" ]
     ChangePage url ->
@@ -244,47 +275,67 @@ handleLoginForm loginAction ({ loginFields, user } as model) =
         |> setPasswordLogin password
         |> Update.identity
 
-handleNewArticleForm : NewArticleAction -> Model -> (Model, Cmd Msg)
-handleNewArticleForm newArticleAction ({ newArticleWriting, date } as model) =
+handleArticleForm : ArticleAction -> Model -> (Model, Cmd Msg)
+handleArticleForm newArticleAction ({ articles, articleWriting, date } as model) =
   case newArticleAction of
-    NewArticleTitle title ->
+    ArticleTitle title ->
       model
-        |> setNewArticleTitle title
+        |> setArticleTitle title
         |> Update.identity
-    NewArticleContent content ->
+    ArticleContent content ->
       model
-        |> setNewArticleContent content
+        |> setArticleContent content
         |> Update.identity
-    NewArticleSubmit ->
-      case newArticleWriting of
+    ArticleSubmit ->
+      case articleWriting of
         NewArticle { title, content } ->
           case date of
             Nothing ->
               model ! []
             Just date ->
               date
-                |> Article.toSubmit title content
+                |> Article.toSubmit "" title content
                 |> Article.Encoder.encodeArticle
                 |> (,) myself
                 |> Firebase.createPost
                 |> List.singleton
                 |> (!) model
-                :> handleNewArticleForm NewArticleRemove
+                :> handleArticleForm ArticleRemove
                 :> update (RequestPosts myself)
+        EditArticle { title, content, uuid } ->
+          case uuid of
+            Nothing ->
+              model ! []
+            Just uuid ->
+              case articles of
+                Nothing ->
+                  model ! []
+                Just articles ->
+                  uuid
+                    |> flip Article.getArticleByHtmlTitle articles
+                    |> Maybe.map (\{ date, uuid } -> Article.toSubmit uuid title content date)
+                    |> Maybe.map (Article.Encoder.encodeArticle)
+                    |> Maybe.map ((,) myself)
+                    |> Maybe.map Firebase.updatePost
+                    |> Maybe.withDefault Cmd.none
+                    |> List.singleton
+                    |> (!) model
+                    :> handleArticleForm ArticleRemove
+                    :> update (RequestPosts myself)
         SentArticle ->
           model ! []
-    NewArticleToggler ->
+    ArticleToggler ->
       model
-        |> toggleNewArticleFocus
+        |> toggleArticleFocus
         |> Update.identity
-    NewArticlePreview ->
+    ArticlePreview ->
       model
-        |> toggleNewArticlePreview
+        |> toggleArticlePreview
         |> Update.identity
-    NewArticleRemove ->
-      { model | newArticleWriting = SentArticle } ! []
-    NewArticleWrite ->
-      { model | newArticleWriting = NewArticle defaultNewArticleFields } ! []
+    ArticleRemove ->
+      { model | articleWriting = SentArticle } ! []
+    ArticleWrite ->
+      { model | articleWriting = NewArticle defaultArticleFields } ! []
 
 redirectIfLogin : Model -> (Model, Cmd Msg)
 redirectIfLogin ({ user, route } as model) =
@@ -338,6 +389,15 @@ customView ({ route, user, articles } as model) =
             |> flip Article.getArticleByHtmlTitle articles
             |> Maybe.map View.Article.view
             |> Maybe.withDefault (View.Static.NotFound.view model)
+    Edit id ->
+      case articles of
+        Nothing ->
+          Html.img
+            [ Html.Attributes.src "/static/img/loading.gif"
+            , Html.Attributes.class "spinner"
+            ] []
+        Just articles ->
+          View.Article.Edit.view model
     Archives ->
       View.Archives.view model
     Contact ->

@@ -29,6 +29,16 @@ program.ports.createPost.subscribe(function(userNameAndPost) {
   })
 })
 
+program.ports.updatePost.subscribe(function(userNameAndPost) {
+  Post.update(userNameAndPost[0], userNameAndPost[1]).then(function() {
+    program.ports.updatedPost.send(true)
+  }).catch(function(error) {
+    console.log(error.code)
+    console.log(error.message)
+    program.ports.updatedPost.send(false)
+  })
+})
+
 // Authentication part.
 program.ports.signInUser.subscribe(function(mailAndPassword) {
   firebase.auth()

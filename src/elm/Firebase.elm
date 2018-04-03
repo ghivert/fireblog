@@ -23,6 +23,15 @@ port createPost : (String, Value) -> Cmd msg
 not. Will be used to process errors in future. -}
 port createdPost : (Bool -> msg) -> Sub msg
 
+{-| Accept a username and an article. The article takes form of
+`{ title, uuid, content, date, tags }`. It updates a post on the database.
+Should be used with `Article.Encoder.encodeArticle`. -}
+port updatePost : (String, Value) -> Cmd msg
+
+{-| Give answer whether post has been accepted (updated in the database) or
+not. Will be used to process errors in future. -}
+port updatedPost : (Bool -> msg) -> Sub msg
+
 
 {-| Request all posts of a user (provided username). Posts are fetched in Firebase
 once. Response comes in `requestedPosts` port. It is impossible to select only

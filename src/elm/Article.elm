@@ -24,9 +24,9 @@ toUnifiedArticle : (String, Article) -> Article
 toUnifiedArticle (uuid, article) =
   { article | uuid = uuid }
 
-toSubmit : String -> String -> Date -> Article
-toSubmit title content date =
-  { uuid = ""
+toSubmit : String -> String -> String -> Date -> Article
+toSubmit uuid title content date =
+  { uuid = uuid
   , title = title
   , content = content
   , tags = []

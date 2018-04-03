@@ -11,6 +11,7 @@ parseRoute =
     , map About <| s "about"
     , map Contact <| s "contact"
     , map Archives <| s "archives"
+    , map Edit <| s "article" </> string </> s "edit"
     , map Article <| s "article" </> string
     , map Dashboard <| s "dashboard"
     , map Login <| s "login"
