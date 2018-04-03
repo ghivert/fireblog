@@ -50,7 +50,7 @@ generateTitleAccordingToRoute route articles =
     Home ->
       Just "Guillaume Hivert | Blog"
     About ->
-      Just "Guillaume Hivert | Blog | À Propos"
+      Just "À Propos | Guillaume Hivert | Blog"
     Article title ->
       articles
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
@@ -62,15 +62,15 @@ generateTitleAccordingToRoute route articles =
         |> Maybe.map .title
         |> Maybe.map (flip (++) " | Édition | Guillaume Hivert | Blog")
     Archives ->
-      Just "Guillaume Hivert | Blog | Archives"
+      Just "Archives | Guillaume Hivert | Blog"
     Contact ->
-      Just "Guillaume Hivert | Blog | Contact"
+      Just "Contact | Guillaume Hivert | Blog"
     Dashboard ->
-      Just "Guillaume Hivert | Blog | Dashboard"
+      Just "Dashboard | Guillaume Hivert | Blog"
     Login ->
-      Just "Guillaume Hivert | Blog | Connexion"
+      Just "Connexion | Guillaume Hivert | Blog"
     NotFound ->
-      Just "Guillaume Hivert | Blog | Page Introuvable"
+      Just "Page Introuvable | Guillaume Hivert | Blog"
 
 myself : String
 myself =
