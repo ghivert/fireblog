@@ -390,14 +390,18 @@ customView ({ route, user, articles } as model) =
             |> Maybe.map View.Article.view
             |> Maybe.withDefault (View.Static.NotFound.view model)
     Edit id ->
-      case articles of
+      case user of
         Nothing ->
-          Html.img
-            [ Html.Attributes.src "/static/img/loading.gif"
-            , Html.Attributes.class "spinner"
-            ] []
-        Just articles ->
-          View.Article.Edit.view model
+          View.Static.NotFound.view model
+        Just user ->
+          case articles of
+            Nothing ->
+              Html.img
+                [ Html.Attributes.src "/static/img/loading.gif"
+                , Html.Attributes.class "spinner"
+                ] []
+            Just articles ->
+              View.Article.Edit.view model
     Archives ->
       View.Archives.view model
     Contact ->
