@@ -263,7 +263,6 @@
   padding: $large-spacing 0;
 
   &--metadata {
-    display: flex;
     align-items: center;
     justify-content: space-between;
 
@@ -286,6 +285,7 @@
       align-self: flex-end;
       color: $light-grey;
       font-size: 0.8em;
+      text-align: right;
     }
   }
 }
@@ -359,5 +359,11 @@
 
   .navbar-menu-button {
     display: none !important;
+  }
+
+  .archives {
+    &--metadata {
+      display: flex;
+    }
   }
 }
