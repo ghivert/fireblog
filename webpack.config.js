@@ -93,7 +93,12 @@ if (isDev === true) {
                 test: /\.sc?ss$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
             }]
-        }
+        },
+        plugins: [
+          new webpack.DefinePlugin({
+            PRODUCTION: JSON.stringify(false)
+          })
+        ]
     });
 }
 
@@ -136,6 +141,10 @@ if (isProd === true) {
                     warnings: false
                 }
                 // mangle:  true
+            }),
+
+            new webpack.DefinePlugin({
+              PRODUCTION: JSON.stringify(true)
             })
         ]
     });
