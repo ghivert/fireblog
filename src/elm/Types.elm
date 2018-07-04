@@ -194,7 +194,12 @@ setArticles =
 
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
-    { model | articles = Remote.Fetched articles }
+  { model | articles =
+    if List.length articles == 0 then
+      Remote.Absent
+    else
+      Remote.Fetched articles
+  }
 
 setRawArticles : Remote (List Article) -> Model -> Model
 setRawArticles =
