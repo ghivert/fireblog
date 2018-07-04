@@ -33,16 +33,84 @@ import LocalStorage
 import Remote exposing (Remote)
 
 port changeTitle : String -> Cmd msg
+port changeStructuredData : Encode.Value -> Cmd msg
+port changeOpenGraphData : Encode.Value -> Cmd msg
 port localStorage : String -> Cmd msg
 port fromLocalStorage : (String -> msg) -> Sub msg
 
-changeTitleIfArticle : Model -> Cmd msg
-changeTitleIfArticle { route, articles } =
-  case generateTitleAccordingToRoute route articles of
-    Nothing ->
-      Cmd.none
-    Just title ->
-      changeTitle title
+changeTitleAndStructuredDataIfArticle : Model -> Cmd msg
+changeTitleAndStructuredDataIfArticle { route, articles, location } =
+  Cmd.batch
+    [ case generateTitleAccordingToRoute route articles of
+      Nothing -> Cmd.none
+      Just title -> changeTitle title
+    , case generateStructuredDataAccordingToRoute route articles of
+      Nothing -> Cmd.none
+      Just content -> changeStructuredData content
+    , articles
+        |> generateOpenGraphDataAccordingToRoute location route
+        |> changeOpenGraphData
+    ]
+
+generateStructuredDataAccordingToRoute : Route -> Remote (List Article) -> Maybe Encode.Value
+generateStructuredDataAccordingToRoute route articles =
+  case route of
+    Home -> Nothing
+    About -> Nothing
+    Edit title -> Nothing
+    Archives -> Nothing
+    Contact -> Nothing
+    Dashboard -> Nothing
+    Login -> Nothing
+    NotFound -> Nothing
+    Article title ->
+      articles
+        |> Remote.toMaybe
+        |> Maybe.andThen (Article.getArticleByHtmlTitle title)
+        |> Maybe.map encodeStructuredData
+
+generateOpenGraphDataAccordingToRoute : Location -> Route -> Remote (List Article) -> Encode.Value
+generateOpenGraphDataAccordingToRoute location route articles =
+  case route of
+    Article title ->
+      articles
+        |> Remote.toMaybe
+        |> Maybe.andThen (Article.getArticleByHtmlTitle title)
+        |> Maybe.map (encodeOpenGraphData location)
+        |> Maybe.withDefault (Encode.object [])
+    _ -> Encode.object []
+
+encodeStructuredData : Article -> Encode.Value
+encodeStructuredData article =
+  Encode.object
+    <| List.append
+      [ ("@context", Encode.string "http://schema.org")
+      , ("@type", Encode.string "NewsArticle")
+      , ("headline", Encode.string article.title)
+      ]
+    <| case article.headImage of
+        Just headImage ->
+          headImage
+            |> Encode.string
+            |> List.singleton
+            |> Encode.list
+            |> (,) "image"
+            |> List.singleton
+        Nothing ->
+          []
+
+encodeOpenGraphData : Location -> Article -> Encode.Value
+encodeOpenGraphData location article =
+  Encode.object
+    <| List.append
+      [ ("url", Encode.string location.href)
+      , ("type", Encode.string "article")
+      , ("title", Encode.string article.title)
+      , ("description", Encode.string article.headline)
+      ]
+    <| case article.headImage of
+      Nothing -> []
+      Just url -> [ ("image", Encode.string url) ]
 
 generateTitleAccordingToRoute : Route -> Remote (List Article) -> Maybe String
 generateTitleAccordingToRoute route articles =
@@ -159,7 +227,7 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
         |> List.map Article.toUnifiedArticle
         |> setArticlesIn model
         |> Update.identity
-        :> update UpdateTitle
+        :> update UpdateTitleAndStructuredData
         :> update StoreArticles
         :> update UpdateEditFields
     GetUser user ->
@@ -173,8 +241,8 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
       model ! []
     RequestPosts username ->
       model ! [ Firebase.requestPosts username ]
-    UpdateTitle ->
-      model ! [ changeTitleIfArticle model ]
+    UpdateTitleAndStructuredData ->
+      model ! [ changeTitleAndStructuredDataIfArticle model ]
     StoreArticles ->
       model ! [ localStorage <| Encode.encode 0 <| LocalStorage.encodeModel model ]
     RestoreArticles articles ->
@@ -229,7 +297,7 @@ handleNavigation navigation model =
         |> setLocation location
         |> setRoute (Routing.parseLocation location)
         |> Update.identity
-        :> update UpdateTitle
+        :> update UpdateTitleAndStructuredData
         :> update UpdateEditFields
     ReloadHomePage ->
       model ! [ Navigation.newUrl "/" ]
@@ -295,15 +363,23 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
       model
         |> setArticleContent content
         |> Update.identity
+    ArticleHeadline headline ->
+      model
+        |> setArticleHeadline headline
+        |> Update.identity
+    ArticleHeadImage headImage ->
+      model
+        |> setArticleHeadImage headImage
+        |> Update.identity
     ArticleSubmit ->
       case articleWriting of
-        NewArticle { title, content } ->
+        NewArticle { title, content, headline, headImage } ->
           case date of
             Nothing ->
               model ! []
             Just date ->
-              date
-                |> Article.toSubmit "" title content
+              Article.toSubmit "" title content date headline
+                (if headImage == "" then Nothing else Just headImage)
                 |> Article.Encoder.encodeArticle
                 |> (,) myself
                 |> Firebase.createPost
@@ -311,7 +387,7 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
                 |> (!) model
                 :> handleArticleForm ArticleRemove
                 :> update (RequestPosts myself)
-        EditArticle { title, content, uuid } ->
+        EditArticle { title, content, uuid, headline, headImage } ->
           case uuid of
             Nothing ->
               model ! []
@@ -320,7 +396,8 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
                 Remote.Fetched articles ->
                   uuid
                     |> flip Article.getArticleByHtmlTitle articles
-                    |> Maybe.map (\{ date, uuid } -> Article.toSubmit uuid title content date)
+                    |> Maybe.map (\{ date, uuid } -> Article.toSubmit uuid title content date headline
+                                    (if headImage == "" then Nothing else Just headImage))
                     |> Maybe.map (Article.Encoder.encodeArticle)
                     |> Maybe.map ((,) myself)
                     |> Maybe.map Firebase.updatePost

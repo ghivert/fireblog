@@ -81,7 +81,7 @@ articlePreview ({ title, content } as articleFields) =
   ]
 
 articleEdition : ArticleFields -> List (Html ArticleAction)
-articleEdition ({ title, content, focused } as articleFields) =
+articleEdition ({ title, content, focused, headline, headImage } as articleFields) =
   [ Html.h2 []
     [ Html.text "Nouvel article | Édition" ]
   , Html.input
@@ -100,6 +100,22 @@ articleEdition ({ title, content, focused } as articleFields) =
     , Html.Events.onBlur ArticleToggler
     , Html.Attributes.style
       <| if focused then [ ("min-height", "200px") ] else []
+    ] []
+  , Html.input
+    [ Html.Attributes.type_ "text"
+    , Html.Attributes.placeholder "Headline..."
+    , Html.Attributes.value headline
+    , Html.Events.onInput ArticleHeadline
+    , Html.Events.onFocus ArticleToggler
+    , Html.Events.onBlur ArticleToggler
+    ] []
+  , Html.input
+    [ Html.Attributes.type_ "text"
+    , Html.Attributes.placeholder "Head Image..."
+    , Html.Attributes.value headImage
+    , Html.Events.onInput ArticleHeadImage
+    , Html.Events.onFocus ArticleToggler
+    , Html.Events.onBlur ArticleToggler
     ] []
   , buttonRow articleFields
   ]

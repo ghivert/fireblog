@@ -10,6 +10,8 @@ type alias Article =
   , content : String
   , tags : List String
   , date : Date
+  , headline : String
+  , headImage : Maybe String
   }
 
 isId : String -> Article -> Bool
@@ -24,13 +26,15 @@ toUnifiedArticle : (String, Article) -> Article
 toUnifiedArticle (uuid, article) =
   { article | uuid = uuid }
 
-toSubmit : String -> String -> String -> Date -> Article
-toSubmit uuid title content date =
+toSubmit : String -> String -> String -> Date -> String -> Maybe String -> Article
+toSubmit uuid title content date headline headImage =
   { uuid = uuid
   , title = title
   , content = content
   , tags = []
   , date = date
+  , headline = headline
+  , headImage = headImage
   }
 
 getArticleByHtmlTitle : String -> List Article -> Maybe Article

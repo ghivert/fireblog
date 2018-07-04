@@ -63,6 +63,28 @@ program.ports.localStorage.subscribe(function(articles) {
   window.localStorage.setItem("articles", pako.deflate(articles, {to: 'string'}))
 })
 
+program.ports.changeStructuredData.subscribe(function(structuredData) {
+  const structuredDataNode = document.getElementById("structured-data")
+  structuredDataNode.textContent = JSON.stringify(structuredData)
+})
+
+program.ports.changeOpenGraphData.subscribe(function(openGraphData) {
+  Array.prototype.slice.call(document.getElementsByName("open-graph-nodes"))
+    .forEach(function(element) {
+      element.remove()
+    })
+  const head = document.getElementsByTagName("head")[0]
+  Object
+    .keys(openGraphData)
+    .forEach(function(element) {
+      var meta = document.createElement("meta")
+      meta.setAttribute("property", "og:" + element)
+      meta.setAttribute("content", openGraphData[element])
+      meta.setAttribute("name", "open-graph-nodes")
+      head.appendChild(meta)
+    })
+})
+
 var articles = window.localStorage.getItem("articles")
 if (articles !== null) {
   program.ports.fromLocalStorage.send(pako.inflate(articles, {to: 'string'}))

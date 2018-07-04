@@ -44,6 +44,8 @@ type LoginAction
 type ArticleAction
   = ArticleTitle String
   | ArticleContent String
+  | ArticleHeadline String
+  | ArticleHeadImage String
   | ArticleSubmit
   | ArticleToggler
   | ArticlePreview
@@ -62,7 +64,7 @@ type Msg
   | GetUser Json.Decode.Value
   | AcceptPost Bool
   | RequestPosts String
-  | UpdateTitle
+  | UpdateTitleAndStructuredData
   | StoreArticles
   | RestoreArticles String
   | UpdateEditFields
@@ -113,6 +115,8 @@ type alias ArticleFields =
   , focused : Bool
   , previewed : Bool
   , uuid : Maybe String
+  , headline : String
+  , headImage : String
   }
 
 defaultArticleFields : ArticleFields
@@ -122,6 +126,8 @@ defaultArticleFields =
   , focused = False
   , previewed = False
   , uuid = Nothing
+  , headline = ""
+  , headImage = ""
   }
 
 setTitleField : String -> ArticleFields -> ArticleFields
@@ -131,6 +137,14 @@ setTitleField title fields =
 setContentField : String -> ArticleFields -> ArticleFields
 setContentField content fields =
   { fields | content = content }
+
+setHeadlineField : String -> ArticleFields -> ArticleFields
+setHeadlineField headline fields =
+  { fields | headline = headline }
+
+setHeadImageField : String -> ArticleFields -> ArticleFields
+setHeadImageField headImage fields =
+  { fields | headImage = headImage }
 
 toggleFocus : ArticleFields -> ArticleFields
 toggleFocus ({ focused } as fields) =
@@ -259,6 +273,18 @@ setArticleContent : String -> Model -> Model
 setArticleContent content ({ articleWriting } as model) =
   articleWriting
     |> articleWritingMap (setContentField content)
+    |> asArticleFieldsIn model
+
+setArticleHeadline : String -> Model -> Model
+setArticleHeadline headline ({ articleWriting } as model) =
+  articleWriting
+    |> articleWritingMap (setHeadlineField headline)
+    |> asArticleFieldsIn model
+
+setArticleHeadImage : String -> Model -> Model
+setArticleHeadImage headImage ({ articleWriting } as model) =
+  articleWriting
+    |> articleWritingMap (setHeadImageField headImage)
     |> asArticleFieldsIn model
 
 toggleArticleFocus : Model -> Model
