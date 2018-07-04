@@ -129,7 +129,7 @@ getActualTime =
   Task.perform DateNow Date.now
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({ menuOpen, date, route, articles } as model) =
+update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
   case msg of
     Navigation navigation ->
       handleNavigation navigation model
@@ -200,7 +200,10 @@ update msg ({ menuOpen, date, route, articles } as model) =
                   |> Update.identity
             _ -> setArticleFields NotFoundArticle model ! []
         Dashboard ->
-          handleArticleForm ArticleWrite model
+          case articleWriting of
+            EditArticle _ -> handleArticleForm ArticleWrite model
+            NotFoundArticle -> handleArticleForm ArticleWrite model
+            _ -> model ! []
         _ ->
           model ! []
 
