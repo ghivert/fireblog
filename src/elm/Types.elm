@@ -7,6 +7,7 @@ import Date exposing (Date)
 
 import Article exposing (Article)
 import User exposing (User)
+import Remote exposing (Remote)
 
 type SpaNavigation
   = NewLocation Location
@@ -92,6 +93,7 @@ type ArticleWriting
   = NewArticle ArticleFields
   | EditArticle ArticleFields
   | SentArticle
+  | NotFoundArticle
 
 articleWritingMap : (ArticleFields -> ArticleFields) -> ArticleWriting -> ArticleWriting
 articleWritingMap mapper writing =
@@ -102,6 +104,8 @@ articleWritingMap mapper writing =
       EditArticle (mapper fields)
     SentArticle ->
       SentArticle
+    NotFoundArticle ->
+      NotFoundArticle
 
 type alias ArticleFields =
   { title : String
@@ -143,7 +147,7 @@ setUuidField uuid fields =
 type alias Model =
   { location : Location
   , route : Route
-  , articles : Maybe (List Article)
+  , articles : Remote (List Article)
   , menuOpen : Bool
   , user : Maybe User
   , date : Maybe Date
@@ -176,6 +180,10 @@ asLoginFieldsIn : Model -> LoginFields -> Model
 asLoginFieldsIn model loginFields =
   { model | loginFields = loginFields }
 
+setArticleFields : ArticleWriting -> Model -> Model
+setArticleFields articleWriting model =
+  { model | articleWriting = articleWriting }
+
 asArticleFieldsIn : Model -> ArticleWriting -> Model
 asArticleFieldsIn model articleWriting =
   { model | articleWriting = articleWriting }
@@ -186,13 +194,13 @@ setArticles =
 
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
-    { model | articles = Just articles }
+    { model | articles = Remote.Fetched articles }
 
-setRawArticles : Maybe (List Article) -> Model -> Model
+setRawArticles : Remote (List Article) -> Model -> Model
 setRawArticles =
   flip setRawArticlesIn
 
-setRawArticlesIn : Model -> Maybe (List Article) -> Model
+setRawArticlesIn : Model -> Remote (List Article) -> Model
 setRawArticlesIn model articles =
     { model | articles = articles }
 

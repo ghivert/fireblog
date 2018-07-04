@@ -6,27 +6,32 @@ import Html.Events
 import Markdown
 
 import Types exposing (..)
+import View.Static.NotFound
 
 view : Model -> Html Msg
-view { articleWriting } =
-  Html.map ArticleForm <|
+view ({ articleWriting } as model) =
     case articleWriting of
       NewArticle ({ focused } as fields) ->
-        viewInternal Nothing
-          (columnIfFocused focused)
-          (articleEdit fields)
+        Html.map ArticleForm
+          <| viewInternal Nothing
+            (columnIfFocused focused)
+            (articleEdit fields)
       EditArticle fields ->
-        viewInternal Nothing []
-          (articleEdit fields)
+        Html.map ArticleForm
+          <| viewInternal Nothing []
+            (articleEdit fields)
       SentArticle ->
-        viewInternal (Just "sent") []
-          [ Html.h1 [] [ Html.text "Article envoyé !" ]
-          , Html.button
-            [ Html.Attributes.value "Envoyer un autre article ?"
-            , Html.Events.onClick ArticleWrite
+        Html.map ArticleForm
+          <| viewInternal (Just "sent") []
+            [ Html.h1 [] [ Html.text "Article envoyé !" ]
+            , Html.button
+              [ Html.Attributes.value "Envoyer un autre article ?"
+              , Html.Events.onClick ArticleWrite
+              ]
+              [ Html.text "Envoyer un autre article ?" ]
             ]
-            [ Html.text "Envoyer un autre article ?" ]
-          ]
+      NotFoundArticle ->
+        View.Static.NotFound.view model
 
 columnIfFocused : Bool -> List (String, String)
 columnIfFocused focused =

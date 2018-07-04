@@ -7,16 +7,17 @@ import Types exposing (..)
 import Article exposing (Article)
 import Article.Encoder
 import Article.Decoder
+import Remote
 
 encodeModel : Model -> Encode.Value
 encodeModel { articles } =
   encodeArticles
     <| case articles of
-      Just articles ->
+      Remote.Fetched articles ->
         articles
           |> List.map Article.Encoder.encodeArticle
           |> Encode.list
-      Nothing ->
+      _ ->
         Encode.null
 
 encodeArticles : Encode.Value -> Encode.Value

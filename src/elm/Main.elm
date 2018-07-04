@@ -5,7 +5,6 @@ import Html exposing (Html)
 import Html.Attributes
 import Update.Extra as Update
 import Update.Extra.Infix exposing (..)
-import Maybe.Extra
 import Window
 import Date exposing (Date)
 import Task
@@ -31,6 +30,7 @@ import View.Static.NotFound
 import View.Static.About
 import Firebase
 import LocalStorage
+import Remote exposing (Remote)
 
 port changeTitle : String -> Cmd msg
 port localStorage : String -> Cmd msg
@@ -44,7 +44,7 @@ changeTitleIfArticle { route, articles } =
     Just title ->
       changeTitle title
 
-generateTitleAccordingToRoute : Route -> Maybe (List Article) -> Maybe String
+generateTitleAccordingToRoute : Route -> Remote (List Article) -> Maybe String
 generateTitleAccordingToRoute route articles =
   case route of
     Home ->
@@ -53,11 +53,13 @@ generateTitleAccordingToRoute route articles =
       Just "À Propos | Guillaume Hivert | Blog"
     Article title ->
       articles
+        |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map .title
         |> Maybe.map (flip (++) " | Guillaume Hivert | Blog")
     Edit title ->
       articles
+        |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map .title
         |> Maybe.map (flip (++) " | Édition | Guillaume Hivert | Blog")
@@ -105,7 +107,7 @@ init : Location -> (Model, Cmd Msg)
 init location =
   { location = location
   , route = Routing.parseLocation location
-  , articles = Nothing
+  , articles = Remote.NotFetched
   , menuOpen = False
   , contactFields =
     { email = ""
@@ -115,7 +117,7 @@ init location =
     { email = ""
     , password = ""
     }
-  , articleWriting = NewArticle defaultArticleFields
+  , articleWriting = NotFoundArticle
   , user = Nothing
   , date = Nothing
   }
@@ -179,22 +181,24 @@ update msg ({ menuOpen, date, route, articles } as model) =
       articles
         |> Decode.decodeString LocalStorage.decodeModel
         |> Result.withDefault Nothing
+        |> Remote.fromMaybe
+        |> (\content -> if content == Remote.Absent then Remote.NotFetched else content)
         |> setInModelIfNotThere model
         |> Update.identity
     UpdateEditFields ->
       case route of
         Edit id ->
           case articles of
-            Nothing ->
-              model ! []
-            Just articles ->
-              id
-                |> flip Article.getArticleByHtmlTitle articles
-                |> Maybe.map (toArticleFields id)
-                |> Maybe.withDefault defaultArticleFields
-                |> EditArticle
-                |> asArticleFieldsIn model
-                |> Update.identity
+            Remote.Fetched articles ->
+              case Article.getArticleByHtmlTitle id articles of
+                Nothing -> setArticleFields NotFoundArticle model ! []
+                Just content ->
+                  content
+                  |> toArticleFields id
+                  |> EditArticle
+                  |> asArticleFieldsIn model
+                  |> Update.identity
+            _ -> setArticleFields NotFoundArticle model ! []
         Dashboard ->
           handleArticleForm ArticleWrite model
         _ ->
@@ -207,9 +211,9 @@ toArticleFields uuid { title, content } =
     |> setTitleField title
     |> setContentField content
 
-setInModelIfNotThere : Model -> Maybe (List Article) -> Model
+setInModelIfNotThere : Model -> Remote (List Article) -> Model
 setInModelIfNotThere ({ articles } as model) articles_ =
-  if Maybe.Extra.isNothing articles then
+  if not (Remote.isFetched articles) then
     setRawArticles articles_ model
   else
     model
@@ -310,9 +314,7 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
               model ! []
             Just uuid ->
               case articles of
-                Nothing ->
-                  model ! []
-                Just articles ->
+                Remote.Fetched articles ->
                   uuid
                     |> flip Article.getArticleByHtmlTitle articles
                     |> Maybe.map (\{ date, uuid } -> Article.toSubmit uuid title content date)
@@ -324,7 +326,11 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
                     |> (!) model
                     :> handleArticleForm ArticleRemove
                     :> update (RequestPosts myself)
+                _ ->
+                  model ! []
         SentArticle ->
+          model ! []
+        NotFoundArticle ->
           model ! []
     ArticleToggler ->
       model
@@ -381,29 +387,29 @@ customView ({ route, user, articles } as model) =
       View.Static.About.view model
     Article id ->
       case articles of
-        Nothing ->
-          Html.img
-            [ Html.Attributes.src "/static/img/loading.gif"
-            , Html.Attributes.class "spinner"
-            ] []
-        Just articles ->
+        Remote.Fetched articles ->
           id
             |> flip Article.getArticleByHtmlTitle articles
             |> Maybe.map View.Article.view
             |> Maybe.withDefault (View.Static.NotFound.view model)
+        _ ->
+          Html.img
+            [ Html.Attributes.src "/static/img/loading.gif"
+            , Html.Attributes.class "spinner"
+            ] []
     Edit id ->
       case user of
         Nothing ->
           View.Static.NotFound.view model
         Just user ->
           case articles of
-            Nothing ->
+            Remote.Fetched articles ->
+              View.Article.Edit.view model
+            _ ->
               Html.img
                 [ Html.Attributes.src "/static/img/loading.gif"
                 , Html.Attributes.class "spinner"
                 ] []
-            Just articles ->
-              View.Article.Edit.view model
     Archives ->
       View.Archives.view model
     Contact ->
