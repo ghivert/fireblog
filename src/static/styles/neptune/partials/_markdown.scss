@@ -20,9 +20,15 @@
 
   pre {
     padding: $large-spacing;
-    border-radius: 5px;
+    border-radius: $border-radius;
     color: #9299A7;
     background-color: #1E2127;
+  }
+
+  p > code {
+    background-color: $xlight-grey;
+    border-radius: $border-radius;
+    padding: 2px 4px;
   }
 
   code {
