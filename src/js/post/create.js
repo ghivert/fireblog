@@ -1,3 +1,5 @@
+import * as firebase from 'firebase'
+
 export default function create(user, content) {
   var database = firebase.database()
 

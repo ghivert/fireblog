@@ -32,8 +32,7 @@ navbarMenu : Model -> Html Msg
 navbarMenu { menuOpen, route, user } =
   Html.div
     [ Html.Attributes.class "navbar-menu"
-    , Html.Attributes.style
-      [ if menuOpen then ("left", "0") else Style.none ]
+    , if menuOpen then Html.Attributes.style "left" "0" else Html.Attributes.style "" ""
     ]
     [ link (route == Home) "Accueil" "/"
     , link (route == About) "À propos" "/about"

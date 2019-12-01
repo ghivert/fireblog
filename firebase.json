@@ -6,15 +6,13 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
+    "rewrites": [{
+      "source": "**",
+      "destination": "/index.html"
+    }]
   },
   "database": {
-    "rules": "database.rules.json"
+    "rules": "config/database.rules.json"
   },
   "functions": {
     "predeploy": [
@@ -22,6 +20,6 @@
     ]
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "config/storage.rules"
   }
 }

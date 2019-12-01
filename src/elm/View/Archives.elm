@@ -13,11 +13,11 @@ view { articles } =
   Html.div
     [ Html.Attributes.class "archives" ]
     <| case articles of
-      Remote.Fetched articles ->
-        List.map View.Article.archivesLink articles
+      Remote.Fetched fetchedArticles ->
+        List.map View.Article.archivesLink fetchedArticles
       _ ->
         [ Html.img
-          [ Html.Attributes.src "/static/img/loading.gif"
+          [ Html.Attributes.src "/img/loading.gif"
           , Html.Attributes.class "spinner"
           ] []
         ]

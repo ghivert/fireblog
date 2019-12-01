@@ -12,11 +12,11 @@ view { articles } =
   Html.div
     [ Html.Attributes.class "articles" ]
     <| case articles of
-      Remote.Fetched articles ->
-        List.map View.Article.preview articles
+      Remote.Fetched fetchedArticles ->
+        List.map View.Article.preview fetchedArticles
       _ ->
         [ Html.img
-          [ Html.Attributes.src "/static/img/loading.gif"
+          [ Html.Attributes.src "/img/loading.gif"
           , Html.Attributes.class "spinner"
           ] []
         ]

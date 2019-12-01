@@ -1,12 +1,12 @@
 module Routing exposing (parseLocation)
 
-import Navigation exposing (Location)
-import UrlParser exposing (Parser, (</>), map, top, s, string)
+import Url exposing (Url)
+import Url.Parser exposing (Parser, (</>), map, top, s, string)
 import Types exposing (..)
 
 parseRoute : Parser (Route -> a) a
 parseRoute =
-  UrlParser.oneOf
+  Url.Parser.oneOf
     [ map Home top
     , map About <| s "about"
     , map Contact <| s "contact"
@@ -17,9 +17,9 @@ parseRoute =
     , map Login <| s "login"
     ]
 
-parseLocation : Location -> Route
+parseLocation : Url -> Route
 parseLocation location =
-  case (UrlParser.parsePath parseRoute location) of
+  case (Url.Parser.parse parseRoute location) of
     Just route ->
       route
     Nothing ->

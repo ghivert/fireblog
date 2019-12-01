@@ -3,10 +3,8 @@ module View.Article exposing (view, preview, archivesLink, articleUrl)
 import Html exposing (Html)
 import Html.Attributes
 import Html.Extra
-import Date exposing (Date)
-import Date.Extra.Format
-import Date.Extra.Config.Config_fr_fr
 import Markdown
+import Time exposing (Posix)
 
 import Article exposing (Article)
 import Types exposing (..)
@@ -21,9 +19,8 @@ view { title, content, tags, date } =
         [ Html.Attributes.class "article--title" ]
         [ Html.text title ]
       , Html.img
-        [ Html.Attributes.src "/static/img/neptune/separator.png"
-        , Html.Attributes.style
-          [ ("align-self", "flex-start") ]
+        [ Html.Attributes.src "/img/neptune/separator.png"
+        , Html.Attributes.style "align-self" "flex-start"
         ] []
       , Html.p
           [ Html.Attributes.class "article--content" ]
@@ -43,9 +40,8 @@ preview ({ title, content, uuid, tags, date } as article) =
       [ Html.Attributes.class "article--title" ]
       [ articleLink article ]
     , Html.img
-      [ Html.Attributes.src "/static/img/neptune/separator.png"
-      , Html.Attributes.style
-        [ ("align-self", "flex-start") ]
+      [ Html.Attributes.src "/img/neptune/separator.png"
+      , Html.Attributes.style "align-self" "flex-start"
       ] []
     , Html.p
       [ Html.Attributes.class "article--content" ]
@@ -90,26 +86,26 @@ shorten string =
   if String.length string > 500 then
     string
       |> String.left 500
-      |> flip String.append "…"
+      |> \e -> String.append e "…"
   else
     string
 
-dateView : String -> Date -> Html Msg
+dateView : String -> Posix -> Html Msg
 dateView class date =
   Html.div
     [ Html.Attributes.class class ]
-    [ Html.text
-      <| Date.Extra.Format.format
-        Date.Extra.Config.Config_fr_fr.config
-        frenchDateFormat
-        date
-    ]
+    [ Html.text "" ]
+    --   <| Date.Extra.Format.format
+    --     Date.Extra.Config.Config_fr_fr.config
+    --     frenchDateFormat
+    --     date
+    -- ]
 
-articleDateView : Date -> Html Msg
+articleDateView : Posix -> Html Msg
 articleDateView =
   dateView "article--date"
 
-archivesDateView : Date -> Html Msg
+archivesDateView : Posix -> Html Msg
 archivesDateView =
   dateView "archives--date"
 

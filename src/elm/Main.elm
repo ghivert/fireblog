@@ -1,15 +1,18 @@
 port module Main exposing (..)
 
-import Navigation exposing (Location)
 import Html exposing (Html)
 import Html.Attributes
 import Update.Extra as Update
-import Update.Extra.Infix exposing (..)
-import Window
-import Date exposing (Date)
+import Browser
+import Browser.Events
+import Browser.Navigation as Navigation
 import Task
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Update
+import Update.Extra
+import Time exposing (Posix)
+import Url
 
 import Types exposing (..)
 import Article exposing (Article)
@@ -63,16 +66,16 @@ generateStructuredDataAccordingToRoute route articles =
     Dashboard -> Nothing
     Login -> Nothing
     NotFound -> Nothing
-    Article title ->
+    Types.Article title ->
       articles
         |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map encodeStructuredData
 
-generateOpenGraphDataAccordingToRoute : Location -> Route -> Remote (List Article) -> Encode.Value
+generateOpenGraphDataAccordingToRoute : Url.Url -> Route -> Remote (List Article) -> Encode.Value
 generateOpenGraphDataAccordingToRoute location route articles =
   case route of
-    Article title ->
+    Types.Article title ->
       articles
         |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
@@ -91,19 +94,18 @@ encodeStructuredData article =
     <| case article.headImage of
         Just headImage ->
           headImage
-            |> Encode.string
             |> List.singleton
-            |> Encode.list
-            |> (,) "image"
+            |> Encode.list Encode.string
+            |> Tuple.pair "image"
             |> List.singleton
         Nothing ->
           []
 
-encodeOpenGraphData : Location -> Article -> Encode.Value
+encodeOpenGraphData : Url.Url -> Article -> Encode.Value
 encodeOpenGraphData location article =
   Encode.object
     <| List.append
-      [ ("url", Encode.string location.href)
+      [ ("url", Encode.string location.path)
       , ("type", Encode.string "article")
       , ("title", Encode.string article.title)
       , ("description", Encode.string article.headline)
@@ -119,18 +121,18 @@ generateTitleAccordingToRoute route articles =
       Just "Guillaume Hivert | Blog"
     About ->
       Just "À Propos | Guillaume Hivert | Blog"
-    Article title ->
+    Types.Article title ->
       articles
         |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map .title
-        |> Maybe.map (flip (++) " | Guillaume Hivert | Blog")
+        |> Maybe.map (\e -> e ++ " | Guillaume Hivert | Blog")
     Edit title ->
       articles
         |> Remote.toMaybe
         |> Maybe.andThen (Article.getArticleByHtmlTitle title)
         |> Maybe.map .title
-        |> Maybe.map (flip (++) " | Édition | Guillaume Hivert | Blog")
+        |> Maybe.map (\e -> e ++ " | Édition | Guillaume Hivert | Blog")
     Archives ->
       Just "Archives | Guillaume Hivert | Blog"
     Contact ->
@@ -146,19 +148,21 @@ myself : String
 myself =
   "myself"
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-  Navigation.program (Navigation << NewLocation)
+  Browser.application
     { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
+    , onUrlChange = Navigation << NewLocation
+    , onUrlRequest = Navigation << UrlRequest
     }
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
-    [ Window.resizes Resizes
+    [ Browser.Events.onResize Resizes
     , firebaseSubscriptions model
     , fromLocalStorage RestoreArticles
     ]
@@ -171,9 +175,10 @@ firebaseSubscriptions model =
     , Firebase.createdPost AcceptPost
     ]
 
-init : Location -> (Model, Cmd Msg)
-init location =
+init : () -> Url.Url -> Navigation.Key -> (Model, Cmd Msg)
+init flags location key =
   { location = location
+  , key = key
   , route = Routing.parseLocation location
   , articles = Remote.NotFetched
   , menuOpen = False
@@ -189,12 +194,13 @@ init location =
   , user = Nothing
   , date = Nothing
   }
-    ! [ getActualTime ]
-    :> update (RequestPosts myself)
+    |> Update.identity
+    |> Update.Extra.addCmd getActualTime
+    |> Update.Extra.andThen update (RequestPosts myself)
 
 getActualTime : Cmd Msg
 getActualTime =
-  Task.perform DateNow Date.now
+  Task.perform DateNow Time.now
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
@@ -203,16 +209,16 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
       handleNavigation navigation model
     HamburgerMenu action ->
       handleHamburgerMenu action model
-    Resizes { width } ->
+    Resizes width height ->
       if width >= 736 then
         model
           |> closeMenu
           |> Update.identity
       else
-        model ! []
-    DateNow date ->
+        model |> Update.identity
+    DateNow actualDate ->
       model
-        |> setDate (Just date)
+        |> setDate (Just actualDate)
         |> Update.identity
     ContactForm action ->
       handleContactForm action model
@@ -227,9 +233,9 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
         |> List.map Article.toUnifiedArticle
         |> setArticlesIn model
         |> Update.identity
-        :> update UpdateTitleAndStructuredData
-        :> update StoreArticles
-        :> update UpdateEditFields
+        |> Update.Extra.andThen update UpdateTitleAndStructuredData
+        |> Update.Extra.andThen update StoreArticles
+        |> Update.Extra.andThen update UpdateEditFields
     GetUser user ->
       user
         |> Decode.decodeValue User.Decoder.decodeUser
@@ -238,15 +244,15 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
         |> redirectIfLogin
     AcceptPost accepted ->
       let debug = Debug.log "accepted" accepted in
-      model ! []
+      model |> Update.identity |> Update.Extra.addCmd (Cmd.batch [])
     RequestPosts username ->
-      model ! [ Firebase.requestPosts username ]
+      model |> Update.identity |> Update.Extra.addCmd (Cmd.batch [ Firebase.requestPosts username ])
     UpdateTitleAndStructuredData ->
-      model ! [ changeTitleAndStructuredDataIfArticle model ]
+      model |> Update.identity |> Update.Extra.addCmd (Cmd.batch [ changeTitleAndStructuredDataIfArticle model ])
     StoreArticles ->
-      model ! [ localStorage <| Encode.encode 0 <| LocalStorage.encodeModel model ]
-    RestoreArticles articles ->
-      articles
+      model |> Update.identity |> Update.Extra.addCmd (Cmd.batch [ localStorage <| Encode.encode 0 <| LocalStorage.encodeModel model ])
+    RestoreArticles savedArticles ->
+      savedArticles
         |> Decode.decodeString LocalStorage.decodeModel
         |> Result.withDefault Nothing
         |> Remote.fromMaybe
@@ -257,23 +263,23 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
       case route of
         Edit id ->
           case articles of
-            Remote.Fetched articles ->
-              case Article.getArticleByHtmlTitle id articles of
-                Nothing -> setArticleFields NotFoundArticle model ! []
+            Remote.Fetched fetchedArticles ->
+              case Article.getArticleByHtmlTitle id fetchedArticles of
+                Nothing -> setArticleFields NotFoundArticle model |> Update.identity
                 Just content ->
                   content
                   |> toArticleFields id
                   |> EditArticle
                   |> asArticleFieldsIn model
                   |> Update.identity
-            _ -> setArticleFields NotFoundArticle model ! []
+            _ -> setArticleFields NotFoundArticle model |> Update.identity
         Dashboard ->
           case articleWriting of
             EditArticle _ -> handleArticleForm ArticleWrite model
             NotFoundArticle -> handleArticleForm ArticleWrite model
-            _ -> model ! []
+            _ -> model |> Update.identity
         _ ->
-          model ! []
+          model |> Update.identity
 
 toArticleFields : String -> Article -> ArticleFields
 toArticleFields uuid { title, content } =
@@ -297,28 +303,31 @@ handleNavigation navigation model =
         |> setLocation location
         |> setRoute (Routing.parseLocation location)
         |> Update.identity
-        :> update UpdateTitleAndStructuredData
-        :> update UpdateEditFields
+        |> Update.Extra.andThen update UpdateTitleAndStructuredData
+        |> Update.Extra.andThen update UpdateEditFields
+    UrlRequest request ->
+      model
+        |> Update.identity
     ReloadHomePage ->
-      model ! [ Navigation.newUrl "/" ]
+      model |> Update.identity |> Update.addCmd (Cmd.batch [ Navigation.pushUrl model.key "/" ])
     ChangePage url ->
-      (closeMenu model) ! [ Navigation.newUrl url ]
+      (closeMenu model) |> Update.identity |> Update.addCmd (Cmd.batch [ Navigation.pushUrl model.key url ])
     BackPage ->
-      model ! [ Navigation.back 1 ]
+      model |> Update.identity |> Update.addCmd (Cmd.batch [ Navigation.back model.key 1 ])
     ForwardPage ->
-      model ! [ Navigation.forward 1 ]
+      model |> Update.identity |> Update.addCmd (Cmd.batch [ Navigation.forward model.key 1 ])
 
 handleHamburgerMenu : MenuAction -> Model -> (Model, Cmd Msg)
 handleHamburgerMenu action model =
   case action of
     ToggleMenu ->
-      toggleMenu model ! []
+      toggleMenu model |> Update.identity |> Update.addCmd (Cmd.batch [])
 
 handleContactForm : ContactAction -> Model -> (Model, Cmd Msg)
 handleContactForm contactAction model =
   case contactAction of
     SendContactMail ->
-      model ! [] -- TODO SendGrid integration.
+      model |> Update.identity |> Update.addCmd (Cmd.batch []) -- TODO SendGrid integration.
     ContactEmailInput email ->
       model
         |> setEmailContact email
@@ -329,10 +338,10 @@ handleContactForm contactAction model =
         |> Update.identity
 
 handleLoginForm : LoginAction -> Model -> (Model, Cmd Msg)
-handleLoginForm loginAction ({ loginFields, user } as model) =
+handleLoginForm loginAction ({ loginFields, user, key } as model) =
   case loginAction of
     LoginUser ->
-      model ! [ Firebase.signInUser (loginFields.email, loginFields.password) ]
+      model |> Update.identity |> Update.addCmd (Cmd.batch [ Firebase.signInUser (loginFields.email, loginFields.password) ])
     LogoutUser ->
       case user of
         Just { email } ->
@@ -340,9 +349,9 @@ handleLoginForm loginAction ({ loginFields, user } as model) =
             |> setUser Nothing
             |> Update.identity
             |> Update.addCmd (Firebase.logoutUser email)
-            :> handleNavigation (ChangePage "/")
+            |> Update.Extra.andThen handleNavigation (ChangePage "/")
         Nothing ->
-          model ! [ Navigation.newUrl "/" ]
+          model |> Update.identity |> Update.addCmd (Cmd.batch [ Navigation.pushUrl key "/" ])
     LoginEmailInput email ->
       model
         |> setEmailLogin email
@@ -376,42 +385,42 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
         NewArticle { title, content, headline, headImage } ->
           case date of
             Nothing ->
-              model ! []
-            Just date ->
-              Article.toSubmit "" title content date headline
+              model |> Update.identity |> Update.addCmd (Cmd.batch [])
+            Just date_ ->
+              Article.toSubmit "" title content date_ headline
                 (if headImage == "" then Nothing else Just headImage)
                 |> Article.Encoder.encodeArticle
-                |> (,) myself
+                |> Tuple.pair myself
                 |> Firebase.createPost
                 |> List.singleton
-                |> (!) model
-                :> handleArticleForm ArticleRemove
-                :> update (RequestPosts myself)
+                |> Cmd.batch >> Tuple.pair model
+                |> Update.Extra.andThen handleArticleForm ArticleRemove
+                |> Update.Extra.andThen update (RequestPosts myself)
         EditArticle { title, content, uuid, headline, headImage } ->
           case uuid of
             Nothing ->
-              model ! []
-            Just uuid ->
+              model |> Update.identity
+            Just existingUuid ->
               case articles of
-                Remote.Fetched articles ->
-                  uuid
-                    |> flip Article.getArticleByHtmlTitle articles
-                    |> Maybe.map (\{ date, uuid } -> Article.toSubmit uuid title content date headline
+                Remote.Fetched fetchedArticles ->
+                  existingUuid
+                    |> \e -> Article.getArticleByHtmlTitle e fetchedArticles
+                    |> Maybe.map (\item -> Article.toSubmit item.uuid title content item.date headline
                                     (if headImage == "" then Nothing else Just headImage))
                     |> Maybe.map (Article.Encoder.encodeArticle)
-                    |> Maybe.map ((,) myself)
+                    |> Maybe.map (Tuple.pair myself)
                     |> Maybe.map Firebase.updatePost
                     |> Maybe.withDefault Cmd.none
                     |> List.singleton
-                    |> (!) model
-                    :> handleArticleForm ArticleRemove
-                    :> update (RequestPosts myself)
+                    |> Cmd.batch >> Tuple.pair model
+                    |> Update.Extra.andThen handleArticleForm ArticleRemove
+                    |> Update.Extra.andThen update (RequestPosts myself)
                 _ ->
-                  model ! []
+                  model |> Update.identity
         SentArticle ->
-          model ! []
+          model |> Update.identity
         NotFoundArticle ->
-          model ! []
+          model |> Update.identity
     ArticleToggler ->
       model
         |> toggleArticleFocus
@@ -421,42 +430,48 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
         |> toggleArticlePreview
         |> Update.identity
     ArticleRemove ->
-      { model | articleWriting = SentArticle } ! []
+      { model | articleWriting = SentArticle }
+      |> Update.identity
     ArticleWrite ->
-      { model | articleWriting = NewArticle defaultArticleFields } ! []
+      { model | articleWriting = NewArticle defaultArticleFields }
+      |> Update.identity
 
 redirectIfLogin : Model -> (Model, Cmd Msg)
 redirectIfLogin ({ user, route } as model) =
-  model ! [ selectRedirectPath model ]
+  (model, selectRedirectPath model)
 
 selectRedirectPath : Model -> Cmd Msg
-selectRedirectPath { user, route } =
+selectRedirectPath { user, route, key } =
   case user of
     Nothing ->
       Cmd.none
     Just _ ->
       case route of
         Login ->
-          Navigation.newUrl "/dashboard"
+          Navigation.pushUrl key "/dashboard"
         _ ->
           Cmd.none
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-  Html.div []
-    [ View.Static.Header.view model
-    , Html.div
-      [ Html.Attributes.class "body" ]
-      [ Html.img
-        [ Html.Attributes.class "banner-photo"
-        , Html.Attributes.src "/static/img/banner-photo.jpg"
-        ] []
+  { title = "Application"
+  , body =
+    [ Html.div []
+      [ View.Static.Header.view model
       , Html.div
-        [ Html.Attributes.class "container" ]
-        [ customView model ]
+        [ Html.Attributes.class "body" ]
+        [ Html.img
+          [ Html.Attributes.class "banner-photo"
+          , Html.Attributes.src "/img/banner-photo.jpg"
+          ] []
+        , Html.div
+          [ Html.Attributes.class "container" ]
+          [ customView model ]
+        ]
+      , View.Static.Footer.view model
       ]
-    , View.Static.Footer.view model
     ]
+  }
 
 customView : Model -> Html Msg
 customView ({ route, user, articles } as model) =
@@ -465,29 +480,29 @@ customView ({ route, user, articles } as model) =
       View.Home.view model
     About ->
       View.Static.About.view model
-    Article id ->
+    Types.Article id ->
       case articles of
-        Remote.Fetched articles ->
+        Remote.Fetched fetchedArticles ->
           id
-            |> flip Article.getArticleByHtmlTitle articles
+            |> \a -> Article.getArticleByHtmlTitle a fetchedArticles
             |> Maybe.map View.Article.view
             |> Maybe.withDefault (View.Static.NotFound.view model)
         _ ->
           Html.img
-            [ Html.Attributes.src "/static/img/loading.gif"
+            [ Html.Attributes.src "/img/loading.gif"
             , Html.Attributes.class "spinner"
             ] []
     Edit id ->
       case user of
         Nothing ->
           View.Static.NotFound.view model
-        Just user ->
+        Just _ ->
           case articles of
-            Remote.Fetched articles ->
+            Remote.Fetched _ ->
               View.Article.Edit.view model
             _ ->
               Html.img
-                [ Html.Attributes.src "/static/img/loading.gif"
+                [ Html.Attributes.src "/img/loading.gif"
                 , Html.Attributes.class "spinner"
                 ] []
     Archives ->
@@ -498,7 +513,7 @@ customView ({ route, user, articles } as model) =
       case user of
         Nothing ->
           View.Static.NotFound.view model
-        Just user ->
+        Just _ ->
           View.Dashboard.view model
     Login ->
       Html.map LoginForm <| View.Login.view model

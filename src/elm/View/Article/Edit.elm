@@ -43,9 +43,11 @@ columnIfFocused focused =
 viewInternal : Maybe String -> List (String, String) -> List (Html msg) -> Html msg
 viewInternal extraClass style content =
     Html.div
-      [ Html.Attributes.class "dashboard"
-      , Html.Attributes.style style
-      ]
+      (List.concat
+        [ [ Html.Attributes.class "dashboard" ]
+        , (List.map (\(key, value) -> Html.Attributes.style key value) style)
+        ]
+      )
       [ Html.div
         [ Html.Attributes.class
           <| (++) "dashboard-left"
@@ -72,9 +74,8 @@ articlePreview ({ title, content } as articleFields) =
   , Html.h3 []
     [ Html.text title ]
   , Html.img
-    [ Html.Attributes.src "/static/img/neptune/separator.png"
-    , Html.Attributes.style
-      [ ("align-self", "flex-start") ]
+    [ Html.Attributes.src "/img/neptune/separator.png"
+    , Html.Attributes.style "align-self" "flex-start"
     ] []
   , Markdown.toHtml [ Html.Attributes.class "markdown--content" ] content
   , buttonRow articleFields
@@ -98,8 +99,7 @@ articleEdition ({ title, content, focused, headline, headImage } as articleField
     , Html.Events.onInput ArticleContent
     , Html.Events.onFocus ArticleToggler
     , Html.Events.onBlur ArticleToggler
-    , Html.Attributes.style
-      <| if focused then [ ("min-height", "200px") ] else []
+    , if focused then Html.Attributes.style "min-height" "200px" else Html.Attributes.style "" ""
     ] []
   , Html.input
     [ Html.Attributes.type_ "text"
@@ -152,7 +152,7 @@ genericButton : GenericButtonValue msg -> Html msg
 genericButton { value, flex, disabled, onClick } =
   Html.button
     [ Html.Attributes.value value
-    , Html.Attributes.style [ ("flex", (toString flex)) ]
+    , Html.Attributes.style "flex" (String.fromFloat flex)
     , Html.Attributes.disabled disabled
     , Html.Events.onClick onClick
     ]

@@ -18,10 +18,12 @@ elements to intercept the hard page reload to send instead message in order to
 have proper SPA behavior. -}
 onPreventClick : msg -> Html.Attribute msg
 onPreventClick message =
-  Html.Events.onWithOptions "click"
-    { stopPropagation = True
-    , preventDefault = True
-    } (Json.Decode.succeed message)
+  Html.Events.custom "click"
+    <| Json.Decode.succeed
+      { stopPropagation = True
+      , preventDefault = True
+      , message = message
+      }
 
 {-| Filter a string to ensure legit characters in URL. Replaces whitespaces with
 dash and lower every character. -}

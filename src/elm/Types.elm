@@ -1,16 +1,18 @@
 module Types exposing (..)
 
 import Json.Decode
-import Navigation exposing (Location)
-import Window exposing (Size)
-import Date exposing (Date)
+import Browser
+import Browser.Navigation as Navigation
+import Time exposing (Posix)
+import Url
 
 import Article exposing (Article)
 import User exposing (User)
 import Remote exposing (Remote)
 
 type SpaNavigation
-  = NewLocation Location
+  = NewLocation Url.Url
+  | UrlRequest Browser.UrlRequest
   | ReloadHomePage
   | ChangePage String
   | BackPage
@@ -55,8 +57,8 @@ type ArticleAction
 type Msg
   = Navigation SpaNavigation
   | HamburgerMenu MenuAction
-  | Resizes Size
-  | DateNow Date
+  | Resizes Int Int
+  | DateNow Posix
   | ContactForm ContactAction
   | LoginForm LoginAction
   | ArticleForm ArticleAction
@@ -159,18 +161,19 @@ setUuidField uuid fields =
   { fields | uuid = Just uuid }
 
 type alias Model =
-  { location : Location
+  { location : Url.Url
+  , key : Navigation.Key
   , route : Route
   , articles : Remote (List Article)
   , menuOpen : Bool
   , user : Maybe User
-  , date : Maybe Date
+  , date : Maybe Posix
   , contactFields : ContactFields
   , loginFields : LoginFields
   , articleWriting : ArticleWriting
   }
 
-setLocation : Location -> Model -> Model
+setLocation : Url.Url -> Model -> Model
 setLocation location model =
   { model | location = location }
 
@@ -203,8 +206,8 @@ asArticleFieldsIn model articleWriting =
   { model | articleWriting = articleWriting }
 
 setArticles : List Article -> Model -> Model
-setArticles =
-  flip setArticlesIn
+setArticles a b =
+  setArticlesIn b a
 
 setArticlesIn : Model -> List Article -> Model
 setArticlesIn model articles =
@@ -216,26 +219,26 @@ setArticlesIn model articles =
   }
 
 setRawArticles : Remote (List Article) -> Model -> Model
-setRawArticles =
-  flip setRawArticlesIn
+setRawArticles a b =
+  setRawArticlesIn b a
 
 setRawArticlesIn : Model -> Remote (List Article) -> Model
 setRawArticlesIn model articles =
     { model | articles = articles }
 
 setUser : Maybe User -> Model -> Model
-setUser =
-  flip setUserIn
+setUser a b =
+  setUserIn b a
 
 setUserIn : Model -> Maybe User -> Model
 setUserIn model user =
   { model | user = user }
 
-setDate : Maybe Date -> Model -> Model
-setDate =
-  flip setDateIn
+setDate : Maybe Posix -> Model -> Model
+setDate a b =
+  setDateIn b a
 
-setDateIn : Model -> Maybe Date -> Model
+setDateIn : Model -> Maybe Posix -> Model
 setDateIn model date =
   { model | date = date }
 

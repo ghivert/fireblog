@@ -13,10 +13,9 @@ encodeModel : Model -> Encode.Value
 encodeModel { articles } =
   encodeArticles
     <| case articles of
-      Remote.Fetched articles ->
-        articles
-          |> List.map Article.Encoder.encodeArticle
-          |> Encode.list
+      Remote.Fetched fetchedArticles ->
+        fetchedArticles
+          |> Encode.list Article.Encoder.encodeArticle
       _ ->
         Encode.null
 
