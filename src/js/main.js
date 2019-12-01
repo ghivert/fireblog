@@ -14,81 +14,71 @@ const program = Elm.Main.init({
 })
 
 // Posts part.
-program.ports.requestPosts.subscribe(function(userName) {
+program.ports.requestPosts.subscribe(async userName => {
   console.log('Request posts!')
-  Post.list(userName).then(function(posts) {
-    program.ports.requestedPosts.send(posts.val())
-  })
+  const posts = await Post.list(userName)
+  program.ports.requestedPosts.send(posts.val())
 })
 
-program.ports.createPost.subscribe(function(userNameAndPost) {
-  Post.create(userNameAndPost[0], userNameAndPost[1])
-    .then(function() {
-      program.ports.createdPost.send(true)
-    })
-    .catch(function(error) {
-      console.log(error.code)
-      console.log(error.message)
-      program.ports.createdPost.send(false)
-    })
+program.ports.createPost.subscribe(async userNameAndPost => {
+  try {
+    await Post.create(userNameAndPost[0], userNameAndPost[1])
+    program.ports.createdPost.send(true)
+  } catch (error) {
+    console.log(error.code)
+    console.log(error.message)
+    program.ports.createdPost.send(false)
+  }
 })
 
-program.ports.updatePost.subscribe(function(userNameAndPost) {
-  Post.update(userNameAndPost[0], userNameAndPost[1])
-    .then(function() {
-      program.ports.updatedPost.send(true)
-    })
-    .catch(function(error) {
-      console.log(error.code)
-      console.log(error.message)
-      program.ports.updatedPost.send(false)
-    })
+program.ports.updatePost.subscribe(async userNameAndPost => {
+  try {
+    await Post.update(userNameAndPost[0], userNameAndPost[1])
+    program.ports.updatedPost.send(true)
+  } catch (error) {
+    console.log(error.code)
+    console.log(error.message)
+    program.ports.updatedPost.send(false)
+  }
 })
 
 // Authentication part.
-program.ports.signInUser.subscribe(function(mailAndPassword) {
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(mailAndPassword[0], mailAndPassword[1])
-    .catch(function(error) {
-      console.log(error.code)
-      console.log(error.message)
-    })
+program.ports.signInUser.subscribe(async mailAndPassword => {
+  try {
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword(mailAndPassword[0], mailAndPassword[1])
+  } catch (error) {
+    console.log(error.code)
+    console.log(error.message)
+  }
 })
 
-program.ports.logoutUser.subscribe(function(email) {
-  firebase
-    .auth()
-    .signOut()
-    .then(function() {
-      console.log('Successfully logout!')
-    })
+program.ports.logoutUser.subscribe(async email => {
+  await firebase.auth().signOut()
+  console.log('Successfully logout!')
 })
 
-program.ports.changeTitle.subscribe(function(title) {
+program.ports.changeTitle.subscribe(title => {
   document.title = title
 })
 
-program.ports.localStorage.subscribe(function(articles) {
-  window.localStorage.setItem(
-    'articles',
-    pako.deflate(articles, { to: 'string' })
-  )
+program.ports.localStorage.subscribe(articles => {
+  const deflated = pako.deflate(articles, { to: 'string' })
+  window.localStorage.setItem('articles', deflated)
 })
 
-program.ports.changeStructuredData.subscribe(function(structuredData) {
+program.ports.changeStructuredData.subscribe(structuredData => {
   const structuredDataNode = document.getElementById('structured-data')
   structuredDataNode.textContent = JSON.stringify(structuredData)
 })
 
-program.ports.changeOpenGraphData.subscribe(function(openGraphData) {
+program.ports.changeOpenGraphData.subscribe(openGraphData => {
   Array.prototype.slice
     .call(document.getElementsByName('open-graph-nodes'))
-    .forEach(function(element) {
-      element.remove()
-    })
+    .forEach(element => element.remove())
   const head = document.getElementsByTagName('head')[0]
-  Object.keys(openGraphData).forEach(function(element) {
+  Object.keys(openGraphData).forEach(element => {
     var meta = document.createElement('meta')
     meta.setAttribute('property', 'og:' + element)
     meta.setAttribute('content', openGraphData[element])
@@ -97,12 +87,17 @@ program.ports.changeOpenGraphData.subscribe(function(openGraphData) {
   })
 })
 
-var articles = window.localStorage.getItem('articles')
-if (articles !== null) {
-  program.ports.fromLocalStorage.send(pako.inflate(articles, { to: 'string' }))
+const startup = () => {
+  const articles = window.localStorage.getItem('articles')
+  if (articles !== null) {
+    const inflated = pako.inflate(articles, { to: 'string' })
+    program.ports.fromLocalStorage.send(inflated)
+  }
 }
 
-firebase.auth().onAuthStateChanged(function(user) {
+startup()
+
+firebase.auth().onAuthStateChanged(user => {
   if (user) {
     program.ports.authChanges.send(user)
   } else {
