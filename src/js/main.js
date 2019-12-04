@@ -1,7 +1,7 @@
 import 'normalize-css'
 import hljs from 'highlight.js'
 import pako from 'pako'
-import Post from '@/js/post'
+import * as Post from '@/js/post'
 import { Elm } from '@/elm/Main'
 import '@/js/config'
 import firebase from 'firebase'
@@ -20,9 +20,9 @@ program.ports.requestPosts.subscribe(async userName => {
   program.ports.requestedPosts.send(posts.val())
 })
 
-program.ports.createPost.subscribe(async userNameAndPost => {
+program.ports.createPost.subscribe(async ([username, post]) => {
   try {
-    await Post.create(userNameAndPost[0], userNameAndPost[1])
+    await Post.create(username, post)
     program.ports.createdPost.send(true)
   } catch (error) {
     console.log(error.code)
@@ -31,9 +31,9 @@ program.ports.createPost.subscribe(async userNameAndPost => {
   }
 })
 
-program.ports.updatePost.subscribe(async userNameAndPost => {
+program.ports.updatePost.subscribe(async ([username, post]) => {
   try {
-    await Post.update(userNameAndPost[0], userNameAndPost[1])
+    await Post.update(username, post)
     program.ports.updatedPost.send(true)
   } catch (error) {
     console.log(error.code)
@@ -43,24 +43,18 @@ program.ports.updatePost.subscribe(async userNameAndPost => {
 })
 
 // Authentication part.
-program.ports.signInUser.subscribe(async mailAndPassword => {
+program.ports.signInUser.subscribe(async ([mail, password]) => {
   try {
-    await firebase
-      .auth()
-      .signInWithEmailAndPassword(mailAndPassword[0], mailAndPassword[1])
+    await firebase.auth().signInWithEmailAndPassword(mail, password)
   } catch (error) {
     console.log(error.code)
     console.log(error.message)
   }
 })
 
-program.ports.logoutUser.subscribe(async email => {
+program.ports.logoutUser.subscribe(async () => {
   await firebase.auth().signOut()
   console.log('Successfully logout!')
-})
-
-program.ports.changeTitle.subscribe(title => {
-  document.title = title
 })
 
 program.ports.localStorage.subscribe(articles => {
@@ -74,14 +68,13 @@ program.ports.changeStructuredData.subscribe(structuredData => {
 })
 
 program.ports.changeOpenGraphData.subscribe(openGraphData => {
-  Array.prototype.slice
-    .call(document.getElementsByName('open-graph-nodes'))
-    .forEach(element => element.remove())
+  const ogNodes = [...document.getElementsByName('open-graph-nodes')]
+  ogNodes.forEach(element => element.remove())
   const head = document.getElementsByTagName('head')[0]
-  Object.keys(openGraphData).forEach(element => {
+  Object.entries(openGraphData).forEach(([element, content]) => {
     var meta = document.createElement('meta')
     meta.setAttribute('property', 'og:' + element)
-    meta.setAttribute('content', openGraphData[element])
+    meta.setAttribute('content', content)
     meta.setAttribute('name', 'open-graph-nodes')
     head.appendChild(meta)
   })
