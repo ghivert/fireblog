@@ -1,0 +1,358 @@
+/* // Library */
+/* @import 'partials/hamburgers'; */
+/* @import '~hamburgers/_sass/hamburgers/hamburgers'; */
+
+/* // Partials in SCSS */
+/* @import 'partials/base';
+@import 'partials/markdown'; */
+/* // Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbarBrand {
+  font-weight: 700;
+  font-size: 1.8em;
+  letter-spacing: -1px;
+  padding: var(--large-spacing);
+}
+
+.navbarBrandLink {
+  color: black;
+  transition: all 0.2s;
+}
+
+.navbarMenu {
+  display: flex;
+  padding: 0 var(--medium-spacing);
+  transition: left 0.5s ease-in-out;
+}
+
+.navbarMenuLink {
+  padding: var(--medium-spacing);
+  color: var(--light-grey);
+  font-family: var(--lato);
+  cursor: pointer;
+  outline: none;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.isActive {
+  color: var(--light-blue);
+}
+
+/* // Misc */
+.bannerPhoto {
+  width: 100%;
+}
+
+.legalDisclaimer {
+  margin-bottom: var(--medium-spacing);
+  padding: var(--xlarge-spacing) var(--small-spacing);
+  color: var(--light-grey);
+  text-align: center;
+  font-size: 0.7em;
+}
+
+/* // Articles */
+.articles {
+  /* // padding-top: var(--xxlarge-spacing); */
+}
+
+.article {
+  padding: var(--medium-spacing) 0;
+}
+.article div {
+  padding: var(--small-spacing) 0;
+}
+
+.articleTitle {
+  font-family: var(--lato);
+  font-size: 1.5em;
+}
+
+.articleTitle a {
+  color: #050505;
+}
+
+.articleContent {
+  color: var(--dark-grey);
+  font-size: 0.95em;
+  line-height: 1.6em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+.articleDate {
+  text-align: right;
+  color: var(--dark-grey);
+  font-size: 0.8em;
+}
+
+.articleReadMore {
+  text-align: right;
+  font-family: var(--lato);
+}
+
+.articleTags {
+  font-family: var(--lato);
+}
+
+.aboutTitle {
+  font-family: var(--lato);
+  font-size: 1.5em;
+  padding-top: var(--xlarge-spacing);
+}
+
+.aboutParagraph {
+  color: var(--dark-grey);
+  font-size: 0.95em;
+  line-height: 1.5em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+.contact {
+  padding: var(--xxlarge-spacing) 0;
+  padding-top: 0;
+  max-width: 400px;
+  margin: auto;
+}
+
+.contactIntroduction {
+  padding: var(--medium-spacing) 0;
+}
+
+.contactFormLabel {
+  padding: var(--small-spacing) 0;
+  font-family: var(--lato);
+  font-weight: 400;
+  display: block;
+}
+
+.contactFormLabel span {
+  padding: 0 var(--small-spacing);
+}
+
+input, textarea {
+  margin-top: var(--medium-spacing);
+  margin-bottom: var(--large-spacing);
+  padding: var(--medium-spacing);
+  color: var(--dark-grey);
+  border-radius: 7px;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border: 1px solid black;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.contactFormSubmit {
+  padding: var(--small-spacing) 0;
+  font-family: var(--lato);
+  background-color: white;
+  color: var(--light-blue);
+  border: none;
+  font-weight: 700;
+  border-radius: 30px;
+  border: 2px solid var(--light-blue);
+}
+
+.contactFormSubmit:hover {
+  color: white;
+  background-color: var(--light-blue);
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: row;
+}
+.dashboardLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard input, .dashboard textarea {
+  margin-top: var(--medium-spacing);
+  margin-bottom: var(--large-spacing);
+  padding: var(--medium-spacing);
+  color: var(--dark-grey);
+  border-radius: 7px;
+  outline: none;
+
+  &:focus {
+    border: 1px solid black;
+  }
+}
+
+.dashboard textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.dashboard.sent {
+  text-align: center;
+}
+
+.dashboard button {
+  padding: var(--small-spacing) 0;
+  font-family: var(--lato);
+  background-color: white;
+  color: var(--light-blue);
+  border: none;
+  font-weight: 700;
+  border-radius: 30px;
+  border: 2px solid var(--light-blue);
+  margin: 0 var(--medium-spacing);
+  outline: none;
+  &:hover {
+    color: white;
+    background-color: var(--light-blue);
+  }
+  &[disabled] {
+    color: var(--light-grey);
+    border-color: var(--light-grey);
+    &:hover {
+      background-color: white;
+      color: var(--light-grey);
+    }
+  }
+}
+
+.dashboardButtonRow {
+  display: flex;
+  padding: var(--medium-spacing) 0;
+}
+
+.notFound {
+  text-align: center;
+  padding: var(--xxlarge-spacing) 0;
+}
+
+.notFound404 {
+  font-size: 3em;
+  font-weight: 900;
+}
+
+.notFoundText {
+  font-size: 3em;
+  padding-bottom: var(--xxlarge-spacing);
+}
+
+.archives {
+  padding: var(--large-spacing) 0;
+}
+
+.archivesMetadata {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.archivesArticle {
+  font-family: var(--lato);
+  font-size: 1.1em;
+}
+
+.archivesTitle {
+  margin: 0;
+  padding: var(--small-spacing);
+  font-weight: 500;
+}
+
+a {
+  color: var(--dark-grey);
+}
+
+.archivesDate {
+  align-self: flex-end;
+  color: var(--light-grey);
+  font-size: 0.8em;
+  text-align: right;
+}
+
+/* // Responsive container */
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* // iPhone 5S & SE | 4' screen */
+@media (min-width : 320px) and (max-width : 568px) {
+  .dashboard {
+    flex-direction: column;
+  }
+}
+
+/* // iPhone 6 | 4.7' screen */
+@media (min-width : 375px) and (max-width : 667px) {
+  .dashboard {
+    flex-direction: column;
+  }
+}
+
+/* // iPhone 6 plus | 5.5' screen */
+@media (min-width : 414px) and (max-width : 736px) {
+  .dashboard {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 736px) {
+  .container {
+    padding-left: var(--xlarge-spacing);
+    padding-right: var(--xlarge-spacing);
+  }
+
+  .navbarMenu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    flex-direction: column;
+    background-color: white;
+    z-index: 1000;
+    box-shadow: 2px 0px 6px -1px #939393;
+    height: 100%;
+    min-width: 200px;
+    padding: 0 var(--xlarge-spacing) !important;
+  }
+
+  .navbarMenuLink {
+    font-size: 1.3em;
+    outline: none;
+  }
+
+  .navbarMenuLink:first-child {
+    padding-top: var(--xxlarge-spacing) !important;
+  }
+
+  .navbarMenuLink:focus, .navbarMenuLink:active {
+    outline: none;
+  }
+}
+
+@media (min-width: 736px) {
+  .container {
+    padding-left: var(--xxlarge-spacing);
+    padding-right: var(--xxlarge-spacing);
+    max-width: 720px;
+  }
+
+  .navbarMenuButton {
+    display: none !important;
+  }
+
+  .archivesMetadata {
+    display: flex;
+  }
+}

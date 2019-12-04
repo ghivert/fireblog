@@ -18,3 +18,5 @@ database.rules.json
 storage.rules
 sitemaps.xml
 yarn-error.log
+public/styles.css
+src/Fireblog
