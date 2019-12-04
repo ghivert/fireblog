@@ -4,7 +4,6 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Html.Extra
-import Style.Extra as Style
 import Types exposing (..)
 
 view : Model -> Html Msg
