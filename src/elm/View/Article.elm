@@ -85,8 +85,8 @@ shorten : String -> String
 shorten string =
   if String.length string > 500 then
     string
-      |> String.left 500
-      |> \e -> String.append e "…"
+    |> String.left 500
+    |> \e -> String.append e "…"
   else
     string
 

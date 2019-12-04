@@ -11,12 +11,12 @@ view : Model -> Html Msg
 view { articles } =
   Html.div
     [ Html.Attributes.class "articles" ]
-    <| case articles of
-      Remote.Fetched fetchedArticles ->
-        List.map View.Article.preview fetchedArticles
-      _ ->
-        [ Html.img
-          [ Html.Attributes.src "/img/loading.gif"
-          , Html.Attributes.class "spinner"
-          ] []
-        ]
+      <| case articles of
+        Remote.Fetched fetchedArticles ->
+          List.map View.Article.preview fetchedArticles
+        _ ->
+          [ Html.img
+            [ Html.Attributes.src "/img/loading.gif"
+            , Html.Attributes.class "spinner"
+            ] []
+          ]

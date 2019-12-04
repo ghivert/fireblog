@@ -20,8 +20,7 @@ view { articles } =
       [ Html.Attributes.class "not-found--text" ]
       [ Html.text "Page non trouvée" ]
     , case lastArticle of
-      Nothing ->
-        Html.Extra.none
+      Nothing -> Html.Extra.none
       Just ({ title, uuid } as article) ->
         Html.div
           [ Html.Attributes.class "not-found--proposition" ]

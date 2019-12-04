@@ -40,5 +40,5 @@ toSubmit uuid title content date headline headImage =
 getArticleByHtmlTitle : String -> List Article -> Maybe Article
 getArticleByHtmlTitle id articles =
   id
-    |> isHtmlTitle
-    |> \t -> List.Extra.find t articles
+  |> isHtmlTitle
+  |> \t -> List.Extra.find t articles

@@ -8,8 +8,7 @@ import Iso8601
 import Article exposing (Article)
 
 decodePosts : Decoder (List (String, Article))
-decodePosts =
-  Decode.keyValuePairs decodePost
+decodePosts = Decode.keyValuePairs decodePost
 
 decodePost : Decoder Article
 decodePost =

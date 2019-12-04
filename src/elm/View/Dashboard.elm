@@ -6,5 +6,4 @@ import Types exposing (..)
 import View.Article.Edit
 
 view : Model -> Html Msg
-view model =
-  View.Article.Edit.view model
+view model = View.Article.Edit.view model

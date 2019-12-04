@@ -36,16 +36,10 @@ navbarMenu { menuOpen, route, user } =
     ]
     [ link (route == Home) "Accueil" "/"
     , link (route == About) "À propos" "/about"
-    , link (case route of
-        Archives ->
-          True
-        _ ->
-          False) "Archives" "/archives"
+    , link (route == Archives) "Archives" "/archives"
     , case user of
-      Just _ ->
-        link (route == Dashboard) "Dashboard" "/dashboard"
-      Nothing ->
-        link (route == Contact) "Contact" "/contact"
+        Just _ -> link (route == Dashboard) "Dashboard" "/dashboard"
+        Nothing -> link (route == Contact) "Contact" "/contact"
     ]
 
 link : Bool -> String -> String -> Html Msg
@@ -62,14 +56,14 @@ link active label url =
 addActive : Bool -> List String -> String
 addActive active classes =
   classes
-    |> (++) (if active then [ "is-active" ] else [])
-    |> String.join " "
+  |> (++) (if active then [ "is-active" ] else [])
+  |> String.join " "
 
 hamburgerButton : Model -> Html Msg
 hamburgerButton { menuOpen } =
   Html.button
-    [ Html.Attributes.class <|
-      addActive menuOpen [ "hamburger", "hamburger--vortex" ]
+    [ Html.Attributes.class
+      <| addActive menuOpen [ "hamburger", "hamburger--vortex" ]
     , Html.Attributes.type_ "button"
     , Html.Events.onClick <| HamburgerMenu ToggleMenu
     ]

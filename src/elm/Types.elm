@@ -245,59 +245,59 @@ setDateIn model date =
 setEmailContact : String -> Model -> Model
 setEmailContact email ({ contactFields } as model) =
   contactFields
-    |> setEmailField email
-    |> asContactFieldsIn model
+  |> setEmailField email
+  |> asContactFieldsIn model
 
 setMessageContact : String -> Model -> Model
 setMessageContact message ({ contactFields } as model) =
   contactFields
-    |> setMessageField message
-    |> asContactFieldsIn model
+  |> setMessageField message
+  |> asContactFieldsIn model
 
 setEmailLogin : String -> Model -> Model
 setEmailLogin email ({ loginFields } as model) =
   loginFields
-    |> setEmailField email
-    |> asLoginFieldsIn model
+  |> setEmailField email
+  |> asLoginFieldsIn model
 
 setPasswordLogin : String -> Model -> Model
 setPasswordLogin password ({ loginFields } as model) =
   loginFields
-    |> setPasswordField password
-    |> asLoginFieldsIn model
+  |> setPasswordField password
+  |> asLoginFieldsIn model
 
 setArticleTitle : String -> Model -> Model
 setArticleTitle title ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap (setTitleField title)
-    |> asArticleFieldsIn model
+  |> articleWritingMap (setTitleField title)
+  |> asArticleFieldsIn model
 
 setArticleContent : String -> Model -> Model
 setArticleContent content ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap (setContentField content)
-    |> asArticleFieldsIn model
+  |> articleWritingMap (setContentField content)
+  |> asArticleFieldsIn model
 
 setArticleHeadline : String -> Model -> Model
 setArticleHeadline headline ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap (setHeadlineField headline)
-    |> asArticleFieldsIn model
+  |> articleWritingMap (setHeadlineField headline)
+  |> asArticleFieldsIn model
 
 setArticleHeadImage : String -> Model -> Model
 setArticleHeadImage headImage ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap (setHeadImageField headImage)
-    |> asArticleFieldsIn model
+  |> articleWritingMap (setHeadImageField headImage)
+  |> asArticleFieldsIn model
 
 toggleArticleFocus : Model -> Model
 toggleArticleFocus ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap toggleFocus
-    |> asArticleFieldsIn model
+  |> articleWritingMap toggleFocus
+  |> asArticleFieldsIn model
 
 toggleArticlePreview : Model -> Model
 toggleArticlePreview ({ articleWriting } as model) =
   articleWriting
-    |> articleWritingMap togglePreview
-    |> asArticleFieldsIn model
+  |> articleWritingMap togglePreview
+  |> asArticleFieldsIn model

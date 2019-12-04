@@ -12,12 +12,12 @@ import Remote
 encodeModel : Model -> Encode.Value
 encodeModel { articles } =
   encodeArticles
-    <| case articles of
-      Remote.Fetched fetchedArticles ->
-        fetchedArticles
-          |> Encode.list Article.Encoder.encodeArticle
-      _ ->
-        Encode.null
+  <| case articles of
+    Remote.Fetched fetchedArticles ->
+      fetchedArticles
+        |> Encode.list Article.Encoder.encodeArticle
+    _ ->
+      Encode.null
 
 encodeArticles : Encode.Value -> Encode.Value
 encodeArticles content =

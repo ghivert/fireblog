@@ -13,23 +13,23 @@ view ({ articleWriting } as model) =
     case articleWriting of
       NewArticle ({ focused } as fields) ->
         Html.map ArticleForm
-          <| viewInternal Nothing
-            (columnIfFocused focused)
-            (articleEdit fields)
+        <| viewInternal Nothing
+          (columnIfFocused focused)
+          (articleEdit fields)
       EditArticle fields ->
         Html.map ArticleForm
-          <| viewInternal Nothing []
-            (articleEdit fields)
+        <| viewInternal Nothing []
+          (articleEdit fields)
       SentArticle ->
         Html.map ArticleForm
-          <| viewInternal (Just "sent") []
-            [ Html.h1 [] [ Html.text "Article envoyé !" ]
-            , Html.button
-              [ Html.Attributes.value "Envoyer un autre article ?"
-              , Html.Events.onClick ArticleWrite
-              ]
-              [ Html.text "Envoyer un autre article ?" ]
+        <| viewInternal (Just "sent") []
+          [ Html.h1 [] [ Html.text "Article envoyé !" ]
+          , Html.button
+            [ Html.Attributes.value "Envoyer un autre article ?"
+            , Html.Events.onClick ArticleWrite
             ]
+            [ Html.text "Envoyer un autre article ?" ]
+          ]
       NotFoundArticle ->
         View.Static.NotFound.view model
 
