@@ -1,0 +1,10 @@
+:root {
+  --hamburger-layer-width: 30px;
+  --hamburger-layer-spacing: 5px;
+  --hamburger-hover-opacity: 0.5;
+  --hamburger-types: vortex;
+}
+
+.hamburger {
+  outline: none;
+}

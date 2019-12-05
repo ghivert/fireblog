@@ -4,7 +4,9 @@ import pako from 'pako'
 import * as Post from '@/js/post'
 import { Elm } from '@/elm/Main'
 import '@/js/config'
+import 'highlight.js/styles/atom-one-dark'
 import firebase from 'firebase'
+import '@/styles.css'
 
 window.hljs = hljs
 hljs.initHighlightingOnLoad()

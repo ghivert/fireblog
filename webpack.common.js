@@ -27,7 +27,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        exclude: [/elm-stuff/, /node_modules/],
+        exclude: [/elm-stuff/],
         loaders: ['style-loader', 'css-loader?url=false'],
       },
       {

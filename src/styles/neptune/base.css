@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+  /* transition: all 0.2s; */
+}
+
+body {
+  font-family: var(--open);
+  color: rgb(5, 5, 5);
+}
+
+a {
+  color: var(--light-grey);
+  text-decoration: none;
+}
+
+a.isActive {
+  color: var(--primary);
+}
+
+input, textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--xlight-grey);
+}
+
+img {
+  max-width: 100%;
+}
+
+.markdownContent img {
+  border-radius: 5px;
+}

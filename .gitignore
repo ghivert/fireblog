@@ -19,4 +19,5 @@ storage.rules
 sitemaps.xml
 yarn-error.log
 public/styles.css
-src/Fireblog
+src/elm/Styles
+src/styles.css

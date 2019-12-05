@@ -1,0 +1,40 @@
+.markdownContent h1,
+.markdownContent h2,
+.markdownContent h3,
+.markdownContent h4,
+.markdownContent h5,
+.markdownContent h6 {
+  font-family: var(--lato);
+}
+
+.markdownContent h1 {
+  font-size: 1.5em;
+}
+
+.markdownContent h2 {
+  font-size: 1.3em;
+}
+
+.markdownContent blockquote {
+  background-color: var(--light-blue);
+  margin: 0;
+  padding: 1em 40px 1em 40px;
+  border-radius: 5px;
+}
+
+.markdownContent pre {
+  padding: var(--large-spacing);
+  border-radius: var(--border-radius);
+  color: #9299a7;
+  background-color: #1e2127;
+}
+
+.markdownContent p > code {
+  background-color: var(--xlight-grey);
+  border-radius: var(--border-radius);
+  padding: 2px 4px;
+}
+
+.markdownContent code {
+  font-family: var(--fira);
+}

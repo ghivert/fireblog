@@ -1,11 +1,26 @@
-/* // Highlight.js theme. */
-@import '~highlight.js/styles/atom-one-dark';
-/* // $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
-// @import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
-// @import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss'; */
-@import 'neptune/main.scss';
+:root {
+  --open: 'Open Sans', sans-serif;
+  --lato: 'Lato', sans-serif;
+  --fira: 'Fira Mono', Consolas, Menlo, Monaco, monospace, sans-serif;
 
-/* // can add Boostrap overrides, additional Sass/CSS below... */
+  /* Palette */
+  --primary: rgb(204, 235, 222);
+  --light-blue: rgb(165, 215, 255);
+  --xlight-grey: rgb(240, 240, 240);
+  --light-grey: rgb(164, 164, 164);
+  --dark-grey: rgb(83, 83, 83);
+
+  /* Spacers */
+  --xsmall-spacing: 3px;
+  --small-spacing: 6px;
+  --medium-spacing: 12px;
+  --large-spacing: 18px;
+  --xlarge-spacing: 24px;
+  --xxlarge-spacing: 36px;
+
+  /* Border Radius */
+  --border-radius: 5px;
+}
 
 .spinner {
   display: block;
