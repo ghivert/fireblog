@@ -242,7 +242,7 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
       |> setUserIn model
       |> redirectIfLogin
     AcceptPost accepted ->
-      let debug = Debug.log "accepted" accepted in
+      -- let debug = Debug.log "accepted" accepted in
       model
       |> Update.identity
     RequestPosts username ->

@@ -13,6 +13,7 @@ config.js
 # Firebase generated files
 firebase-debug.log
 .firebaserc
+.firebase
 
 database.rules.json
 storage.rules

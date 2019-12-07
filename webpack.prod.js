@@ -1,6 +1,6 @@
 const merge = require('webpack-merge')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const common = require('./webpack.common')
 
 console.log('Building for Production...')
@@ -9,9 +9,7 @@ module.exports = merge(common, {
   mode: 'production',
   output: { filename: '[name]-[hash].js' },
   plugins: [
-    new CleanWebpackPlugin(['dist'], {
-      root: __dirname,
-      exclude: [],
+    new CleanWebpackPlugin({
       verbose: true,
       dry: false,
     }),
@@ -27,11 +25,14 @@ module.exports = merge(common, {
           options: { optimize: true },
         },
       },
-      {
-        test: /\.css$/,
-        exclude: [/elm-stuff/, /node_modules/],
-        loaders: ['css-loader?url=false'],
-      },
+      // {
+      //   test: /\.css$/,
+      //   exclude: [/elm-stuff/, /node_modules/],
+      //   loaders: [
+      //     { loader: 'style-loader' },
+      //     { loader: 'css-loader' },
+      //   ],
+      // },
     ],
   },
 })

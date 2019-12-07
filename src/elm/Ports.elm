@@ -43,7 +43,7 @@ decodeFromJs : Decoder FromJsMsg
 decodeFromJs =
   Decode.field "type" Decode.string
   |> Decode.andThen (\type_ ->
-    case (Debug.log "type" type_) of
+    case type_ of
       "REQUEST_POSTS" -> Decode.map FirebaseRequestPosts (Decode.field "posts" Decode.value)
       "CREATE_POST" -> Decode.map CreatePost (Decode.field "res" Decode.bool)
       "UPDATE_POST" -> Decode.map UpdatePost (Decode.field "res" Decode.bool)

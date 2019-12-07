@@ -6,10 +6,6 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [{
-      "source": "**",
-      "destination": "/index.html"
-    }]
   },
   "database": {
     "rules": "config/database.rules.json"

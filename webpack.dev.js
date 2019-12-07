@@ -7,7 +7,7 @@ console.log('Building for dev...')
 
 module.exports = merge(common, {
   mode: 'development',
-  output: { filename: 'index.js' },
+  output: { filename: 'index.js', chunkFilename: '[name].bundle.js' },
   plugins: [],
   module: {
     rules: [

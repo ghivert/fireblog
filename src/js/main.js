@@ -1,5 +1,4 @@
 import 'normalize-css'
-import hljs from 'highlight.js'
 import pako from 'pako'
 import * as Post from '@/js/post'
 import { Elm } from '@/elm/Main'
@@ -10,9 +9,14 @@ import 'firebase/auth'
 import 'firebase/database'
 import '@/styles.css'
 import 'hamburgers/dist/hamburgers.css'
+// import hljs from 'highlight.js'
 
-window.hljs = hljs
-hljs.initHighlightingOnLoad()
+const initHighlight = () => {
+  return import(/* webpackChunkName: 'highlight.js' */ 'highlight.js').then(({ default: hljs }) => {
+    window.hljs = hljs
+    hljs.initHighlightingOnLoad()
+  })
+}
 
 // Inject bundled Elm app into div#main.
 const program = Elm.Main.init({
@@ -137,3 +141,4 @@ const startup = () => {
 }
 
 startup()
+initHighlight()
