@@ -1,4 +1,4 @@
-import * as firebase from 'firebase'
+import firebase from 'firebase/app'
 
 const create = (user, content) => {
   // push(content) creates a new entry with a hash depending on time,

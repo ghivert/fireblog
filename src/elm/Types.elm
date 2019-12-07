@@ -70,6 +70,7 @@ type Msg
   | StoreArticles
   | RestoreArticles String
   | UpdateEditFields
+  | FromJs Json.Decode.Value
 
 type alias ContactFields =
   { email : String

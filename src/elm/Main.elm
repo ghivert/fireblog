@@ -15,6 +15,7 @@ import Time exposing (Posix)
 import Url
 
 import Types exposing (..)
+import Ports exposing (..)
 import Article exposing (Article)
 import Article.Decoder
 import Article.Encoder
@@ -31,24 +32,31 @@ import View.Static.Header
 import View.Static.Footer
 import View.Static.NotFound
 import View.Static.About
-import Firebase
 import LocalStorage
 import Remote exposing (Remote)
 
-port changeStructuredData : Encode.Value -> Cmd msg
-port changeOpenGraphData : Encode.Value -> Cmd msg
-port localStorage : String -> Cmd msg
-port fromLocalStorage : (String -> msg) -> Sub msg
+port toJS : Encode.Value -> Cmd msg
+port fromJS : (Decode.Value -> msg) -> Sub msg
 
 changeStructuredDataIfArticle : Model -> Cmd msg
 changeStructuredDataIfArticle { route, articles, location } =
   Cmd.batch
     [ case generateStructuredDataAccordingToRoute route articles of
         Nothing -> Cmd.none
-        Just content -> changeStructuredData content
+        Just content ->
+          [ ("type", Encode.string changeStructuredData)
+          , ("structuredData", content)
+          ]
+          |> Encode.object
+          |> toJS
     , articles
       |> generateOpenGraphDataAccordingToRoute location route
-      |> changeOpenGraphData
+      |> \openGraphData ->
+        [ ("type", Encode.string changeOpenGraphData)
+        , ("openGraphData", openGraphData)
+        ]
+      |> Encode.object
+      |> toJS
     ]
 
 generateStructuredDataAccordingToRoute : Route -> Remote (List Article) -> Maybe Encode.Value
@@ -161,16 +169,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
     [ Browser.Events.onResize Resizes
-    , firebaseSubscriptions model
-    , fromLocalStorage RestoreArticles
-    ]
-
-firebaseSubscriptions : Model -> Sub Msg
-firebaseSubscriptions model =
-  Sub.batch
-    [ Firebase.requestedPosts GetPosts
-    , Firebase.authChanges GetUser
-    , Firebase.createdPost AcceptPost
+    , fromJS FromJs
     ]
 
 init : () -> Url.Url -> Navigation.Key -> (Model, Cmd Msg)
@@ -247,16 +246,30 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
     RequestPosts username ->
       model
       |> Update.identity
-      |> Update.Extra.addCmd (Firebase.requestPosts username)
+      |> Update.Extra.addCmd
+        (toJS
+          (Encode.object
+            [ ("type", Encode.string requestPosts)
+            , ("username", Encode.string username)
+            ]
+          )
+        )
     UpdateTitleAndStructuredData ->
       model
       |> Update.identity
       |> Update.Extra.addCmd (changeStructuredDataIfArticle model)
     StoreArticles ->
+      let encoded = Encode.encode 0 (LocalStorage.encodeModel model) in
       model
       |> Update.identity
       |> Update.Extra.addCmd
-        (localStorage (Encode.encode 0 (LocalStorage.encodeModel model)))
+        (toJS
+          (Encode.object
+            [ ("type", Encode.string saveToLocalStorage)
+            , ("model", Encode.string encoded)
+            ]
+          )
+        )
     RestoreArticles savedArticles ->
       savedArticles
       |> Decode.decodeString LocalStorage.decodeModel
@@ -286,6 +299,29 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
             _ -> model |> Update.identity
         _ ->
           model |> Update.identity
+    FromJs value ->
+      case Decode.decodeValue decodeFromJs value of
+        Err error -> (model, Cmd.none)
+        Ok val ->
+          case val of
+            FirebaseRequestPosts posts ->
+              model
+              |> Update.identity
+              |> Update.andThen update (GetPosts posts)
+            CreatePost accepted ->
+              model
+              |> Update.identity
+              |> Update.andThen update (AcceptPost accepted)
+            UpdatePost updated ->
+              model
+              |> Update.identity
+            SaveToLocalStorage ->
+              model
+              |> Update.identity
+            ReadFromLocalStorage serialized ->
+              model
+              |> Update.identity
+              |> Update.andThen update (RestoreArticles serialized)
 
 toArticleFields : String -> Article -> ArticleFields
 toArticleFields uuid { title, content } =
@@ -362,14 +398,23 @@ handleLoginForm loginAction ({ loginFields, user, key } as model) =
       let { email, password } = loginFields in
       model
       |> Update.identity
-      |> Update.addCmd (Firebase.signInUser (email, password))
+      |> Update.addCmd
+        (toJS
+          (Encode.object
+            [ ("type", Encode.string signinUser)
+            , ("email", Encode.string email)
+            , ("password", Encode.string password)
+            ]
+          )
+        )
     LogoutUser ->
       case user of
         Just { email } ->
           model
           |> setUser Nothing
           |> Update.identity
-          |> Update.addCmd (Firebase.logoutUser email)
+          |> Update.addCmd
+            (toJS (Encode.object [ ("type", Encode.string logoutUser) ]))
           |> Update.Extra.andThen handleNavigation (ChangePage "/")
         Nothing ->
           model
@@ -414,8 +459,13 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
               Article.toSubmit uuid title content date_ headline
               (if headImage == "" then Nothing else Just headImage)
               |> Article.Encoder.encodeArticle
-              |> Tuple.pair myself
-              |> Firebase.createPost
+              |> \article -> toJS
+                (Encode.object
+                  [ ("type", Encode.string createPost)
+                  , ("username", Encode.string myself)
+                  , ("post", article)
+                  ]
+                )
               |> List.singleton
               |> Cmd.batch >> Tuple.pair model
               |> Update.Extra.andThen handleArticleForm ArticleRemove
@@ -434,8 +484,16 @@ handleArticleForm newArticleAction ({ articles, articleWriting, date } as model)
                     |> \e -> Article.getArticleByHtmlTitle e fetchedArticles
                     |> Maybe.map generateToSubmitArticle
                     |> Maybe.map (Article.Encoder.encodeArticle)
-                    |> Maybe.map (Tuple.pair myself)
-                    |> Maybe.map Firebase.updatePost
+                    |> Maybe.map
+                      (\article ->
+                        toJS
+                          (Encode.object
+                            [ ("type", Encode.string updatePost)
+                            , ("username", Encode.string myself)
+                            , ("post", article)
+                            ]
+                          )
+                      )
                     |> Maybe.withDefault Cmd.none
                     |> List.singleton
                     |> Cmd.batch >> Tuple.pair model
