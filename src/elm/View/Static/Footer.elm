@@ -5,6 +5,7 @@ import Html.Attributes
 import Html.Extra
 
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
 
 view : Model -> Html Msg
 view model =
@@ -14,22 +15,19 @@ view model =
 disclaimer : Model -> Html Msg
 disclaimer { user } =
   Html.div
-    [ Html.Attributes.class "legal-disclaimer" ]
-    [ Html.div
-      [ Html.Attributes.class "legal-disclaimer--item" ]
+    [ Html.Attributes.class Styles.legalDisclaimer ]
+    [ Html.div []
       [ Html.text "Photo de bannière par "
       , blankLink "https://unsplash.com/photos/5AiWn2U10cw" "Aaron Burden"
       , Html.text " sur "
       , blankLink "https://unsplash.com/" "Unsplash"
       ]
-    , Html.div
-      [ Html.Attributes.class "legal-disclaimer--item" ]
+    , Html.div []
       [ Html.a
         [ Html.Attributes.href "https://github.com/afnizarnur/saturn" ]
         [ Html.text "Design fortement inspiré de Saturn, de Afnizar Nur Ghifari" ]
       ]
-    , Html.div
-      [ Html.Attributes.class "legal-disclaimer--item" ]
+    , Html.div []
       [ case user of
         Just { email } ->
           Html.a

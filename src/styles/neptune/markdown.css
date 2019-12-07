@@ -38,3 +38,7 @@
 .markdownContent code {
   font-family: var(--fira);
 }
+
+.markdownContent img {
+  border-radius: 5px;
+}

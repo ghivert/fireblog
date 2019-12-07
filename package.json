@@ -10,9 +10,10 @@
   },
   "scripts": {
     "start": "webpack-dev-server --hot --config webpack.dev.js",
-    "build": "webpack",
-    "prebuild": "rm -rf dist",
-    "styles": "modular-styles watch --source src/elm --dest src/elm/Styles --files src/styles --lang elm --bundlePath src"
+    "build": "yarn compile-styles && webpack",
+    "prebuild": "rm -rf dist src/styles.css",
+    "styles": "modular-styles watch --source src/elm --dest src/elm/Styles --files src/styles --lang elm --bundlePath src",
+    "compile-styles": "modular-styles compile --source src/elm --dest src/elm/styles --files src/styles --lang elm --bundlePath src"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",

@@ -26,7 +26,3 @@ input, textarea {
 img {
   max-width: 100%;
 }
-
-.markdownContent img {
-  border-radius: 5px;
-}

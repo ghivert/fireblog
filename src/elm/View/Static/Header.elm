@@ -4,16 +4,18 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Html.Extra
+
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
 
 view : Model -> Html Msg
 view ({ menuOpen } as model) =
   Html.div
-    [ Html.Attributes.class "navbar" ]
+    [ Html.Attributes.class Styles.navbar ]
     [ Html.div
-      [ Html.Attributes.class "navbar-brand" ]
+      [ Html.Attributes.class Styles.navbarBrand ]
       [ Html.a
-        [ Html.Attributes.class "navbar-brand--link"
+        [ Html.Attributes.class Styles.navbarBrandLink
         , Html.Attributes.href "/"
         , Html.Extra.onPreventClick
           <| Navigation
@@ -23,14 +25,14 @@ view ({ menuOpen } as model) =
       ]
     , navbarMenu model
     , Html.div
-      [ Html.Attributes.class "navbar-menu-button" ]
+      [ Html.Attributes.class Styles.navbarMenuButton ]
       [ hamburgerButton model ]
     ]
 
 navbarMenu : Model -> Html Msg
 navbarMenu { menuOpen, route, user } =
   Html.div
-    [ Html.Attributes.class "navbar-menu"
+    [ Html.Attributes.class Styles.navbarMenu
     , if menuOpen then Html.Attributes.style "left" "0" else Html.Attributes.style "" ""
     ]
     [ link (route == Home) "Accueil" "/"
@@ -44,7 +46,7 @@ navbarMenu { menuOpen, route, user } =
 link : Bool -> String -> String -> Html Msg
 link active label url =
   Html.a
-    [ Html.Attributes.class <| addActive active [ "navbar-menu--link" ]
+    [ Html.Attributes.class <| addActive active [ Styles.navbarMenuLink ]
     , Html.Extra.onPreventClick
       <| Navigation
       <| ChangePage url

@@ -9,6 +9,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import '@/styles.css'
+import 'hamburgers/dist/hamburgers.css'
 
 window.hljs = hljs
 hljs.initHighlightingOnLoad()

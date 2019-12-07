@@ -4,11 +4,11 @@ import Html exposing (Html)
 import Html.Attributes
 
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
 
 view : Model -> Html Msg
 view model =
-  Html.div
-    [ Html.Attributes.class "about" ]
+  Html.div []
     [ aboutTitle "Qui suis-je ?"
     , aboutParagraph aboutMe
     , aboutTitle "Pourquoi écrire en français ?"
@@ -18,13 +18,13 @@ view model =
 aboutParagraph : String -> Html Msg
 aboutParagraph content =
   Html.p
-    [ Html.Attributes.class "about--paragraph" ]
+    [ Html.Attributes.class Styles.aboutParagraph ]
     [ Html.text content ]
 
 aboutTitle : String -> Html Msg
 aboutTitle content =
   Html.h1
-    [ Html.Attributes.class "about--title" ]
+    [ Html.Attributes.class Styles.aboutTitle ]
     [ Html.text content ]
 
 aboutMe : String

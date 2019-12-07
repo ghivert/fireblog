@@ -8,23 +8,25 @@ import Time exposing (Posix)
 
 import Article exposing (Article)
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
+import Styles.Neptune.Markdown as MdStyles
 
 view : Article -> Html Msg
 view { title, content, tags, date } =
   Html.div
-    [ Html.Attributes.class "articles" ]
+    [ Html.Attributes.class Styles.articles ]
     [ Html.div
-      [ Html.Attributes.class "article" ]
+      [ Html.Attributes.class Styles.article ]
       [ Html.h1
-        [ Html.Attributes.class "article--title" ]
+        [ Html.Attributes.class Styles.articleTitle ]
         [ Html.text title ]
       , Html.img
         [ Html.Attributes.src "/img/neptune/separator.png"
         , Html.Attributes.style "align-self" "flex-start"
         ] []
       , Html.p
-          [ Html.Attributes.class "article--content" ]
-          [ Markdown.toHtml [ Html.Attributes.class "markdown--content" ] content ]
+          [ Html.Attributes.class Styles.articleContent ]
+          [ Markdown.toHtml [ Html.Attributes.class MdStyles.markdownContent ] content ]
       , articleDateView date
       -- , Html.div
       --   [ Html.Attributes.class "article--tags" ]
@@ -35,17 +37,17 @@ view { title, content, tags, date } =
 preview : Article -> Html Msg
 preview ({ title, content, uuid, tags, date } as article) =
   Html.div
-    [ Html.Attributes.class "article" ]
+    [ Html.Attributes.class Styles.article ]
     [ Html.h1
-      [ Html.Attributes.class "article--title" ]
+      [ Html.Attributes.class Styles.articleTitle ]
       [ articleLink article ]
     , Html.img
       [ Html.Attributes.src "/img/neptune/separator.png"
       , Html.Attributes.style "align-self" "flex-start"
       ] []
     , Html.p
-      [ Html.Attributes.class "article--content" ]
-      [ Markdown.toHtml [ Html.Attributes.class "markdown--content" ] <| shorten content ]
+      [ Html.Attributes.class Styles.articleContent ]
+      [ Markdown.toHtml [ Html.Attributes.class MdStyles.markdownContent ] <| shorten content ]
     , articleDateView date
     -- , Html.div
     --   [ Html.Attributes.class "article--tags" ]
@@ -71,11 +73,11 @@ articleUrl { title, uuid } =
 archivesLink : Article -> Html Msg
 archivesLink ({ date } as article) =
     Html.div
-      [ Html.Attributes.class "archives--metadata" ]
+      [ Html.Attributes.class Styles.archivesMetadata ]
       [ Html.div
-        [ Html.Attributes.class "archives-article" ]
+        [ Html.Attributes.class Styles.archivesArticle ]
         [ Html.h4
-          [ Html.Attributes.class "archives-article--title" ]
+          [ Html.Attributes.class Styles.archivesTitle ]
           [ articleLink article ]
         ]
       , archivesDateView date
@@ -103,11 +105,11 @@ dateView class date =
 
 articleDateView : Posix -> Html Msg
 articleDateView =
-  dateView "article--date"
+  dateView Styles.articleDate
 
 archivesDateView : Posix -> Html Msg
 archivesDateView =
-  dateView "archives--date"
+  dateView Styles.archivesDate
 
 {-| Unused while I18n not activated. -}
 englishDateFormat : String
@@ -117,18 +119,6 @@ englishDateFormat =
 frenchDateFormat : String
 frenchDateFormat =
   "Posté le %d %B %Y"
-
-tagsLink : List String -> Html Msg
-tagsLink tags =
-  Html.span []
-    [ Html.span
-      [ Html.Attributes.class "tags-keyword" ]
-      [ Html.text "Tags : " ]
-    , tags
-      |> List.map tagLink
-      |> List.intersperse (Html.text ", ")
-      |> Html.span []
-    ]
 
 tagLink : String -> Html Msg
 tagLink tag =
@@ -140,7 +130,7 @@ readMoreLink : Article -> Html Msg
 readMoreLink ({ content, title, uuid } as article) =
   if String.length content > 500 then
     Html.div
-      [ Html.Attributes.class "article--read-more" ]
+      [ Html.Attributes.class Styles.articleReadMore ]
       [ Html.a
         [ Html.Attributes.href <| articleUrl article
         , Html.Extra.onPreventClick

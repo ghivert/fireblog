@@ -34,6 +34,8 @@ import View.Static.NotFound
 import View.Static.About
 import LocalStorage
 import Remote exposing (Remote)
+import Styles.Neptune.Main as Styles
+import Styles.Main as CommonStyles
 
 port toJS : Encode.Value -> Cmd msg
 port fromJS : (Decode.Value -> msg) -> Sub msg
@@ -304,23 +306,16 @@ update msg ({ menuOpen, date, route, articles, articleWriting } as model) =
         Err error -> (model, Cmd.none)
         Ok val ->
           case val of
+            UpdatePost updated -> (model, Cmd.none)
+            SaveToLocalStorage -> (model, Cmd.none)
             FirebaseRequestPosts posts ->
-              model
-              |> Update.identity
+              (model, Cmd.none)
               |> Update.andThen update (GetPosts posts)
             CreatePost accepted ->
-              model
-              |> Update.identity
+              (model, Cmd.none)
               |> Update.andThen update (AcceptPost accepted)
-            UpdatePost updated ->
-              model
-              |> Update.identity
-            SaveToLocalStorage ->
-              model
-              |> Update.identity
             ReadFromLocalStorage serialized ->
-              model
-              |> Update.identity
+              (model, Cmd.none)
               |> Update.andThen update (RestoreArticles serialized)
 
 toArticleFields : String -> Article -> ArticleFields
@@ -539,14 +534,13 @@ view ({ route, articles } as model) =
   , body =
     [ Html.div []
       [ View.Static.Header.view model
-      , Html.div
-        [ Html.Attributes.class "body" ]
+      , Html.div []
         [ Html.img
-          [ Html.Attributes.class "banner-photo"
+          [ Html.Attributes.class Styles.bannerPhoto
           , Html.Attributes.src "/img/banner-photo.jpg"
           ] []
         , Html.div
-          [ Html.Attributes.class "container" ]
+          [ Html.Attributes.class Styles.container ]
           [ customView model ]
         ]
       , View.Static.Footer.view model
@@ -571,7 +565,7 @@ customView ({ route, user, articles } as model) =
         _ ->
           Html.img
             [ Html.Attributes.src "/img/loading.gif"
-            , Html.Attributes.class "spinner"
+            , Html.Attributes.class CommonStyles.spinner
             ] []
     Edit id ->
       case user of
@@ -582,7 +576,7 @@ customView ({ route, user, articles } as model) =
             _ ->
               Html.img
                 [ Html.Attributes.src "/img/loading.gif"
-                , Html.Attributes.class "spinner"
+                , Html.Attributes.class CommonStyles.spinner
                 ] []
     Archives ->
       View.Archives.view model

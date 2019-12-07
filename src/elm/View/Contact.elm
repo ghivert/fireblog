@@ -5,21 +5,19 @@ import Html.Attributes
 import Html.Events
 
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
 
 view : Model -> Html ContactAction
 view { contactFields } =
   Html.div
-    [ Html.Attributes.class "contact" ]
-    [ Html.h1
-      [ Html.Attributes.class "contact--title" ]
+    [ Html.Attributes.class Styles.contact ]
+    [ Html.h1 []
       [ Html.text "Contactez-moi pour n'importe quoi !" ]
     , Html.p
-      [ Html.Attributes.class "contact--introduction" ]
+      [ Html.Attributes.class Styles.contactIntroduction ]
       [ Html.text
         "Je serais ravi de discuter avec vous, et très content de lire ce que vous pensez de ce blog." ]
-    -- , contactForm contactFields
-    , Html.p
-      [ Html.Attributes.class "contact--mail" ]
+    , Html.p []
       [ Html.text "Écrivez-moi à "
       , Html.a [ Html.Attributes.href "mailto:hivert.is.coming@gmail.com" ]
         [ Html.text "hivert.is.coming@gmail.com" ]

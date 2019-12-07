@@ -5,14 +5,13 @@ import Html.Attributes
 import Html.Events
 
 import Types exposing (..)
+import Styles.Neptune.Main as Styles
 
 view : Model -> Html LoginAction
 view { loginFields } =
   Html.div
-    [ Html.Attributes.class "contact" ]
-    [ Html.h1
-      [ Html.Attributes.class "contact--title" ]
-      [ Html.text "S'identifier" ]
+    [ Html.Attributes.class Styles.contact ]
+    [ Html.h1 [] [ Html.text "S'identifier" ]
     , loginForm loginFields
     ]
 

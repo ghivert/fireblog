@@ -5,6 +5,6 @@
   --hamburger-types: vortex;
 }
 
-.hamburger {
+:global .hamburger {
   outline: none;
 }
