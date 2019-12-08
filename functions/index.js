@@ -9,7 +9,7 @@ const selectHtmlPage = async () => {
   if (htmlPage) {
     return htmlPage
   } else {
-    const res = await fetch('http://localhost:5000/index.html')
+    const res = await fetch([functions.config().ssr.host, 'index.html'].join('/'))
     const html = await res.text()
     htmlPage = html // eslint-disable-line
     // The previous line allow to do some caching on html page value.
@@ -33,7 +33,7 @@ const ssr = functions.runWith(runtimeOptions).https.onRequest(async (request, re
       })
       const page = await browser.newPage()
       const html = await selectHtmlPage()
-      await page.goto('http://localhost:5000/index.html')
+      await page.goto([functions.config().ssr.host, 'index.html'].join('/'))
       const { path } = request
       await page.evaluate(path => window.history.pushState({}, '', path), path)
       await page.setContent(html, {
