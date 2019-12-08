@@ -12,17 +12,35 @@ The goal is to provide an easy-way to deploy the application on Firebase, with l
 Creates an account on Firebase, and creates a new project. You will be able to access the integration with JavaScript. Just get something like this:
 
 ```javascript
-var config = {
-  apiKey: "api-key",
-  authDomain: "project-url",
-  databaseURL: "database-url",
-  projectId: "project-name",
-  storageBucket: "storage-bucket-url",
-  messagingSenderId: "one-random-number"
+const config = {
+  apiKey: 'api-key',
+  authDomain: 'project-url',
+  databaseURL: 'database-url',
+  projectId: 'project-name',
+  storageBucket: 'storage-bucket-url',
+  messagingSenderId: 'one-random-number'
 }
 ```
 
-When you found it, paste it on `config.js` and replace the standard config (my config). Don't be afraid to share it: it will be on all pages of your site. If someone wants it, can have it really easily.<br>
+When you found it, paste it on `config.js`, like this.
+
+```javascript
+// src/config.js
+import firebase from 'firebase/app'
+
+const config = {
+  apiKey: 'api-key',
+  authDomain: 'project-url',
+  databaseURL: 'database-url',
+  projectId: 'project-name',
+  storageBucket: 'storage-bucket-url',
+  messagingSenderId: 'one-random-number'
+}
+
+firebase.initializeApp(config)
+```
+
+Don't be afraid to share it: it will be on all pages of your site. If someone wants it, can have it really easily.  
 Enable email authentication, and create your account to authenticate. Finally add the uid of the user to the firebase rules of the database, and you're good to go.
 
 Configuration is done!
