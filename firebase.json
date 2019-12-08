@@ -1,19 +1,19 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "ssr"
+      }
+    ]
   },
   "database": {
     "rules": "config/database.rules.json"
   },
   "functions": {
-    "predeploy": [
-      "npm --prefix $RESOURCE_DIR run lint"
-    ]
+    "predeploy": ["npm --prefix $RESOURCE_DIR run lint"]
   },
   "storage": {
     "rules": "config/storage.rules"

@@ -25,14 +25,6 @@ module.exports = merge(common, {
           options: { optimize: true },
         },
       },
-      // {
-      //   test: /\.css$/,
-      //   exclude: [/elm-stuff/, /node_modules/],
-      //   loaders: [
-      //     { loader: 'style-loader' },
-      //     { loader: 'css-loader' },
-      //   ],
-      // },
     ],
   },
 })
