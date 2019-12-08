@@ -27,7 +27,10 @@ const ssr = functions.runWith(runtimeOptions).https.onRequest(async (request, re
     if (request.path.endsWith('/favicon.ico')) {
       response.status(404).end()
     } else {
-      const browser = await puppeteer.launch({ headless: true })
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      })
       const page = await browser.newPage()
       const html = await selectHtmlPage()
       await page.goto('http://localhost:5000/index.html')
