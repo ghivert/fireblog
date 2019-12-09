@@ -1,6 +1,6 @@
 # Fireblog
 
-The world is full of words. Let's add more. Blogging is essential. Having a personal blog is required. Here is one. Fireblog is back, and it's fully up to date! It now uses elm 0.19!
+The world is full of words. Let's add more. Blogging is essential. Having a personal blog is required. Here is one. Fireblog is back, and it's fully up to date! It now uses elm 0.19 and Server-Side Rendering!
 
 ## Context
 
